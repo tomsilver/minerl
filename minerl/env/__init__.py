@@ -34,7 +34,7 @@ register(
     kwargs={
         'xml': os.path.join(missions_dir, 'treechop.xml'),
         'observation_space': gym.spaces.Dict({
-            'pov': gym.spaces.Box(low=0, high=255, shape=(64,64,3), dtype=np.uint8),
+            'pov': gym.spaces.Box(low=0, high=255, shape=(64, 64, 3), dtype=np.uint8),
             # 'XPos': gym.spaces.Box(low=-100000, high=100000, shape=(1,), dtype=np.int32),
             # 'ZPos': gym.spaces.Box(low=-100000, high=100000, shape=(1,), dtype=np.int32)
         }),
@@ -211,11 +211,12 @@ register(
             "sprint": gym.spaces.Discrete(2),
             "attack": gym.spaces.Discrete(2),
             "camera": gym.spaces.Box(low=-180, high=180, shape=(2,), dtype=np.float32),  # Pitch, Yaw
-            "place": spaces.Enum('none', 'dirt', 'stone', 'crafting_table', 'furnace', 'torch'),
+            "place": spaces.Enum('none', 'dirt', 'cobblestone', 'crafting_table', 'furnace', 'torch'),
             "craft": spaces.Enum('none', 'torch', 'stick', 'planks'),
+            "equip": spaces.Enum('none', 'wooden_axe', 'wooden_pickaxe', 'stone_axe', 'stone_pickaxe', 'iron_pickaxe'),
+            "nearbySmelt": spaces.Enum('none', 'iron_ingot', 'coal'),
             "nearbyCraft": spaces.Enum('none', 'wooden_axe', 'wooden_pickaxe', 'stone_axe', 'stone_pickaxe',
                                        'iron_pickaxe', 'crafting_table', 'furnace'),
-            "nearbySmelt": spaces.Enum('none', 'iron_ingot', 'coal')
         })
     },
     max_episode_steps=6000,
@@ -250,7 +251,7 @@ register(
             }),
         }),
         'action_space': gym.spaces.Dict({
-            "forward": gym.spaces.Discrete(2),
+            "forward": gym.spaces.Discrete(2),  
             "back": gym.spaces.Discrete(2),
             "left": gym.spaces.Discrete(2),
             "right": gym.spaces.Discrete(2),
@@ -259,11 +260,12 @@ register(
             "sprint": gym.spaces.Discrete(2),
             "attack": gym.spaces.Discrete(2),
             "camera": gym.spaces.Box(low=-180, high=180, shape=(2,), dtype=np.float32),  # Pitch, Yaw
-            "place": spaces.Enum('none', 'dirt', 'stone', 'crafting_table', 'furnace', 'torch'),
+            "place": spaces.Enum('none', 'dirt', 'cobblestone', 'crafting_table', 'furnace', 'torch'),
+            "equip": spaces.Enum('none', 'wooden_axe', 'wooden_pickaxe', 'stone_axe', 'stone_pickaxe', 'iron_pickaxe'),
             "craft": spaces.Enum('none', 'torch', 'stick', 'planks'),
+            "nearbySmelt": spaces.Enum('none', 'iron_ingot', 'coal'),
             "nearbyCraft": spaces.Enum('none', 'wooden_axe', 'wooden_pickaxe', 'stone_axe', 'stone_pickaxe',
                                        'iron_pickaxe', 'crafting_table', 'furnace'),
-            "nearbySmelt": spaces.Enum('none', 'iron_ingot', 'coal')
         })
     },
     max_episode_steps=18000,
