@@ -35,6 +35,8 @@ class GridWorldWrapper(gym.Wrapper):
     def reset(self):
         obs = self.env.reset()
 
+        # Make face forward
+
         # Get to a grid location
         self.position = np.array([obs['XPos'], obs['YPos'], obs['ZPos']])
         target_position = self.get_target_position(self.position, self.action_space.noop())

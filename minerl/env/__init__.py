@@ -504,6 +504,7 @@ register(
             "back": spaces.Discrete(2), 
             "left": spaces.Discrete(2), 
             "right": spaces.Discrete(2),
+            "turn": spaces.Discrete(2),
         }),
         'docstr': """TODO"""
     },
@@ -528,6 +529,7 @@ register(
             "back": spaces.Discrete(2), 
             "left": spaces.Discrete(2), 
             "right": spaces.Discrete(2),
+            "turn": spaces.Discrete(2),
         }),
         'docstr': """TODO"""
     },
