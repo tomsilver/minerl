@@ -6,7 +6,7 @@ import numpy as np
 class GridWorldWrapper(gym.Wrapper):
     """A wrapper around MineRLEnv so that it can be treated as a discrete gridworld.
     """
-    def __init__(self, env, max_inner_steps=15, threshold=0.05):
+    def __init__(self, env, max_inner_steps=25, threshold=0.01):
         super().__init__(env)
         self.env = env
         self.max_inner_steps = max_inner_steps
@@ -56,7 +56,8 @@ class GridWorldWrapper(gym.Wrapper):
         return obs, reward, done, debug_info
 
     def discretize_position(self, position):
-        return position.astype(np.int64)
+        print('cont position:', position)
+        return (position - 0.5).round().astype(np.int64)
 
     def get_target_position(self, position, action):
         action_directions = np.zeros(3)
@@ -67,7 +68,7 @@ class GridWorldWrapper(gym.Wrapper):
         action_directions[0] = x_change
         action_directions[2] = z_change
 
-        current_discrete_position = self.position.round()
+        current_discrete_position = (self.position - 0.5).round() + 0.5
         target_position = current_discrete_position + action_directions
 
         return target_position

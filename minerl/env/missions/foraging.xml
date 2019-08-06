@@ -60,8 +60,8 @@
             <CameraCommands/>
             <ObservationFromGrid>
                <Grid name="grid">
-                  <min x="-1" y="-1" z="-1" />
-                  <max x="1" y="1" z="1" />
+                  <min x="-2" y="-1" z="-2" />
+                  <max x="2" y="-1" z="2" />
                </Grid>
             </ObservationFromGrid>
 

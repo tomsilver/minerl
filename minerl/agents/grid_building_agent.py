@@ -5,11 +5,12 @@ import matplotlib.pyplot as plt
 
 
 class GridBuildingAgent(object):
-    def __init__(self, action_space, grid_mins=(-1, -1, -1), grid_maxs=(1, 1, 1)):
+    def __init__(self, action_space, grid_mins=(-2, -1, -2), grid_maxs=(2, -1, 2)):
         self.action_space = action_space
 
         self.grid_mins = grid_mins
         self.grid_maxs = grid_maxs
+
 
     def __call__(self, obs):
         action = self.action_space.sample()
@@ -21,17 +22,21 @@ class GridBuildingAgent(object):
         self.min_x, self.min_y, self.min_z = np.inf, np.inf, np.inf
         self.max_x, self.max_y, self.max_z = -np.inf, -np.inf, -np.inf
 
-    def observe(self, obs, reward, done, info):
+        self.process_obs(obs)
+
+    def process_obs(self, obs):
         pos = obs['position']
         grid = tuple(obs['grid'])
 
-        arr = np.array(grid).reshape((tuple(1 + np.subtract(self.grid_maxs, self.grid_mins))))
+        shape = 1 + np.subtract(self.grid_maxs, self.grid_mins)
+        shape[1], shape[2] = shape[2], shape[1]
+        arr = np.array(grid).reshape(shape)
+        arr = np.swapaxes(arr, 1, 2)
+        arr = np.swapaxes(arr, 0, 2)
 
-        print("grid:", grid)
-
-        for i, zo in enumerate(range(self.grid_mins[2], self.grid_maxs[2] + 1)):
+        for i, xo in enumerate(range(self.grid_mins[0], self.grid_maxs[0] + 1)):
             for j, yo in enumerate(range(self.grid_mins[1], self.grid_maxs[1] + 1)):
-                for k, xo in enumerate(range(self.grid_mins[0], self.grid_maxs[0] + 1)):
+                for k, zo in enumerate(range(self.grid_mins[2], self.grid_maxs[2] + 1)):
                     ore = arr[i, j, k]
                     p = (x, y, z) = (pos[0] + xo, pos[1] + yo, pos[2] + zo)
                     if p in self.pos_to_ore:
@@ -40,6 +45,7 @@ class GridBuildingAgent(object):
                             print("Pos:", p)
                             print("Old:", self.pos_to_ore[p])
                             print("New:", ore)
+                            import pdb; pdb.set_trace()
                     else:
                         self.pos_to_ore[p] = ore
 
@@ -51,6 +57,8 @@ class GridBuildingAgent(object):
                     self.max_y = max(self.max_y, y)
                     self.max_z = max(self.max_z, z)
 
+    def observe(self, obs, reward, done, info):
+        self.process_obs(obs)
 
     def finish_episode(self):
         full_grid = np.full((self.max_x - self.min_x + 1, 

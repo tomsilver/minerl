@@ -9,7 +9,7 @@ import minerl
 import numpy as np
 import random
 
-seed = 1
+seed = 4
 np.random.seed(seed)
 random.seed(seed)
 
