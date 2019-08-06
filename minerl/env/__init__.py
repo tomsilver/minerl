@@ -483,30 +483,3 @@ register(
     },
     max_episode_steps=2000,
 )
-
-
-#######################
-#     CONTRIBUTED     #
-#######################
-register(
-    id='MineRLFlatGrid-v0',
-    entry_point='minerl.env:MineRLEnv',
-    kwargs={
-        'xml': os.path.join(missions_dir, 'flatgrid.xml'),
-        'observation_space': spaces.Dict({
-            'pov': spaces.Box(low=0, high=255, shape=(64, 64, 3), dtype=np.uint8),
-            'XPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
-            'YPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
-            'ZPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
-        }),
-        'action_space': spaces.Dict(spaces={
-            "forward": spaces.Discrete(2), 
-            "back": spaces.Discrete(2), 
-            "left": spaces.Discrete(2), 
-            "right": spaces.Discrete(2),
-        }),
-        'docstr': """TODO"""
-    },
-    max_episode_steps=20,
-)
-

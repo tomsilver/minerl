@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import gym
 import minerl
 
+from minerl.env.wrappers import GridWorldWrapper
+
 import numpy as np
 
 import coloredlogs
@@ -20,16 +22,20 @@ def main():
     all_positions = []
 
     env = gym.make('MineRLFlatGrid-v0')
+    env = GridWorldWrapper(env)
+
     env.seed(420)
     obs = env.reset()
-    position = (obs['XPos'], obs['YPos'], obs['ZPos'])
+    position = np.array([obs['XPos'], obs['YPos'], obs['ZPos']])
+    print("position:", position.round())
     all_positions.append(position)
     done = False
     while not done:
         action = env.action_space.noop()
         action['forward'] = 1
         obs, reward, done, info = env.step(action)
-        position = (obs['XPos'], obs['YPos'], obs['ZPos'])
+        position = np.array([obs['XPos'], obs['YPos'], obs['ZPos']])
+        print("position:", position.round())
         all_positions.append(position)
 
     ts = np.arange(len(all_positions))
