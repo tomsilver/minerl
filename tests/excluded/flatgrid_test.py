@@ -26,17 +26,17 @@ def main():
 
     env.seed(420)
     obs = env.reset()
-    position = np.array([obs['XPos'], obs['YPos'], obs['ZPos']])
-    print("position:", position.round())
+    position = np.array([obs['XPos'], obs['YPos'], obs['ZPos']]).round()
+    print("position:", position)
     all_positions.append(position)
     done = False
     while not done:
         action = env.action_space.noop()
         action['forward'] = 1
-        action['left'] = 1
+        # action['left'] = 1
         obs, reward, done, info = env.step(action)
-        position = np.array([obs['XPos'], obs['YPos'], obs['ZPos']])
-        print("position:", position.round())
+        position = np.array([obs['XPos'], obs['YPos'], obs['ZPos']]).round()
+        print("position:", position)
         all_positions.append(position)
 
     ts = np.arange(len(all_positions))
