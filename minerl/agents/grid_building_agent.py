@@ -22,18 +22,15 @@ class GridBuildingAgent(object):
         self.max_x, self.max_y, self.max_z = -np.inf, -np.inf, -np.inf
 
     def observe(self, obs, reward, done, info):
-        xpos = obs['XPos']
-        ypos = obs['YPos']
-        zpos = obs['ZPos']
-        pos = np.array([xpos, ypos, zpos]).round().astype(np.int64)
-
+        pos = obs['position']
         grid = tuple(obs['grid'])
+
         arr = np.array(grid).reshape((tuple(1 + np.subtract(self.grid_maxs, self.grid_mins))))
 
         print("grid:", grid)
 
-        for i, yo in enumerate(range(self.grid_mins[2], self.grid_maxs[2] + 1)):
-            for j, zo in enumerate(range(self.grid_mins[1], self.grid_maxs[1] + 1)):
+        for i, zo in enumerate(range(self.grid_mins[2], self.grid_maxs[2] + 1)):
+            for j, yo in enumerate(range(self.grid_mins[1], self.grid_maxs[1] + 1)):
                 for k, xo in enumerate(range(self.grid_mins[0], self.grid_maxs[0] + 1)):
                     ore = arr[i, j, k]
                     p = (x, y, z) = (pos[0] + xo, pos[1] + yo, pos[2] + zo)

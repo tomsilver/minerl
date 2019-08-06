@@ -35,14 +35,13 @@ class GridWorldWrapper(gym.Wrapper):
     def reset(self):
         obs = self.env.reset()
 
-        # Make face forward
-
         # Get to a grid location
         self.position = np.array([obs['XPos'], obs['YPos'], obs['ZPos']])
         target_position = self.get_target_position(self.position, self.action_space.noop())
 
         obs, _, _, _ = self.step_to_target(target_position)
 
+        obs['position'] = self.discretize_position(self.position)
         return obs
 
     def step(self, action):
@@ -51,7 +50,13 @@ class GridWorldWrapper(gym.Wrapper):
 
         target_position = self.get_target_position(self.position, action)
 
-        return self.step_to_target(target_position)
+        obs, reward, done, debug_info = self.step_to_target(target_position)
+        obs['position'] = self.discretize_position(self.position)
+
+        return obs, reward, done, debug_info
+
+    def discretize_position(self, position):
+        return position.astype(np.int64)
 
     def get_target_position(self, position, action):
         action_directions = np.zeros(3)
@@ -81,11 +86,6 @@ class GridWorldWrapper(gym.Wrapper):
                 action['left'] = 1
             else:
                 action['right'] = 1
-
-        # print("position:", position)
-        # print("target_position:", target_position)
-        # print("action:", action)
-        # import pdb; pdb.set_trace()
 
         return action
 
