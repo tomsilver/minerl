@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<Mission xmlns="http://ProjectMalmo.microsoft.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <About>
+        <Summary>$(ENV_NAME)</Summary>
+    </About>
+
+    <ModSettings>
+        <MsPerTick>50</MsPerTick>
+    </ModSettings>
+ 
+    <ServerSection>
+        <ServerInitialConditions>
+            <Time>
+                <StartTime>6000</StartTime>
+                <AllowPassageOfTime>false</AllowPassageOfTime>
+            </Time>
+            <Weather>clear</Weather>
+            <AllowSpawning>false</AllowSpawning>
+        </ServerInitialConditions>
+        <ServerHandlers>
+            <FlatWorldGenerator />
+            <ServerQuitFromTimeUp timeLimitMs="300000" description="out_of_time"/>
+            <ServerQuitWhenAnyAgentFinishes/>
+        </ServerHandlers>
+    </ServerSection>
+    <AgentSection mode="Survival">
+        <Name>MineRLAgent</Name>
+        <AgentStart />
+        <AgentHandlers>   
+          <VideoProducer want_depth="false">
+              <Width>64</Width>
+              <Height>64</Height>
+          </VideoProducer>
+          <ObservationFromFullStats />
+          <HumanLevelCommands>
+              <ModifierList type="deny-list"> 
+              <command>moveMouse</command> 
+              <command>inventory</command> 
+              </ModifierList>
+          </HumanLevelCommands>
+        </AgentHandlers>  
+    </AgentSection>
+</Mission>
