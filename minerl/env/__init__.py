@@ -488,71 +488,153 @@ register(
 #######################
 #     CONTRIBUTED     #
 #######################
-register(
-    id='MineRLFlatGrid-v0',
-    entry_point='minerl.env:MineRLEnv',
-    kwargs={
-        'xml': os.path.join(missions_dir, 'flatgrid.xml'),
-        'observation_space': spaces.Dict({
-            'pov': spaces.Box(low=0, high=255, shape=(64, 64, 3), dtype=np.uint8),
-            'XPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
-            'YPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
-            'ZPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
-        }),
-        'action_space': spaces.Dict(spaces={
-            "forward": spaces.Discrete(2), 
-            "back": spaces.Discrete(2), 
-            "left": spaces.Discrete(2), 
-            "right": spaces.Discrete(2),
-        }),
-        'docstr': """TODO"""
-    },
-    max_episode_steps=20,
-)
+contributed_env_infos = [
+    ('MineRLFlatGrid-v0', 'flatgrid.xml', 20),
+    ('MineRLForaging-v0', 'foraging.xml', 250),
+    ('MineRLGridUnitTest-v0', 'grid_unit_test.xml', 20),
+    ('MineRLStairsUnitTest-v0', 'stairs_unit_test.xml', 20),
+    ('MineRLSafetyUnitTest-v0', 'safety_unit_test.xml', 20),
+]
+
+for env_id, xml, max_episode_steps in contributed_env_infos:
+    register(
+        id=env_id,
+        entry_point='minerl.env:MineRLEnv',
+        kwargs={
+            'xml': os.path.join(missions_dir, xml),
+            'observation_space': spaces.Dict({
+                'pov': spaces.Box(low=0, high=255, shape=(64, 64, 3), dtype=np.uint8),
+                'XPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
+                'YPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
+                'ZPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
+                'grid': spaces.MultiDiscrete([5, 1, 5]),
+            }),
+            'action_space': spaces.Dict(spaces={
+                "forward": spaces.Discrete(2), 
+                "back": spaces.Discrete(2), 
+                "left": spaces.Discrete(2), 
+                "right": spaces.Discrete(2),
+                "jump" : spaces.Discrete(2),
+            }),
+            'docstr': """TODO"""
+        },
+        max_episode_steps=max_episode_steps,
+    )
+
+# register(
+#     id='MineRLFlatGrid-v0',
+#     entry_point='minerl.env:MineRLEnv',
+#     kwargs={
+#         'xml': os.path.join(missions_dir, 'flatgrid.xml'),
+#         'observation_space': spaces.Dict({
+#             'pov': spaces.Box(low=0, high=255, shape=(64, 64, 3), dtype=np.uint8),
+#             'XPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
+#             'YPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
+#             'ZPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
+#         }),
+#         'action_space': spaces.Dict(spaces={
+#             "forward": spaces.Discrete(2), 
+#             "back": spaces.Discrete(2), 
+#             "left": spaces.Discrete(2), 
+#             "right": spaces.Discrete(2),
+#         }),
+#         'docstr': """TODO"""
+#     },
+#     max_episode_steps=20,
+# )
 
 
-register(
-    id='MineRLForaging-v0',
-    entry_point='minerl.env:MineRLEnv',
-    kwargs={
-        'xml': os.path.join(missions_dir, 'foraging.xml'),
-        'observation_space': spaces.Dict({
-            'pov': spaces.Box(low=0, high=255, shape=(64, 64, 3), dtype=np.uint8),
-            'XPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
-            'YPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
-            'ZPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
-            'grid': spaces.MultiDiscrete([3, 3, 3]),
-        }),
-        'action_space': spaces.Dict(spaces={
-            "forward": spaces.Discrete(2), 
-            "back": spaces.Discrete(2), 
-            "left": spaces.Discrete(2), 
-            "right": spaces.Discrete(2),
-        }),
-        'docstr': """TODO"""
-    },
-    max_episode_steps=250,
-)
+# register(
+#     id='MineRLForaging-v0',
+#     entry_point='minerl.env:MineRLEnv',
+#     kwargs={
+#         'xml': os.path.join(missions_dir, 'foraging.xml'),
+#         'observation_space': spaces.Dict({
+#             'pov': spaces.Box(low=0, high=255, shape=(64, 64, 3), dtype=np.uint8),
+#             'XPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
+#             'YPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
+#             'ZPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
+#             'grid': spaces.MultiDiscrete([3, 3, 3]),
+#         }),
+#         'action_space': spaces.Dict(spaces={
+#             "forward": spaces.Discrete(2), 
+#             "back": spaces.Discrete(2), 
+#             "left": spaces.Discrete(2), 
+#             "right": spaces.Discrete(2),
+#         }),
+#         'docstr': """TODO"""
+#     },
+#     max_episode_steps=250,
+# )
 
-register(
-    id='MineRLGridUnitTest-v0',
-    entry_point='minerl.env:MineRLEnv',
-    kwargs={
-        'xml': os.path.join(missions_dir, 'grid_unit_test.xml'),
-        'observation_space': spaces.Dict({
-            'pov': spaces.Box(low=0, high=255, shape=(64, 64, 3), dtype=np.uint8),
-            'XPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
-            'YPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
-            'ZPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
-            'grid': spaces.MultiDiscrete([3, 3, 3]),
-        }),
-        'action_space': spaces.Dict(spaces={
-            "forward": spaces.Discrete(2), 
-            "back": spaces.Discrete(2), 
-            "left": spaces.Discrete(2), 
-            "right": spaces.Discrete(2),
-        }),
-        'docstr': """TODO"""
-    },
-    max_episode_steps=20,
-)
+# register(
+#     id='MineRLGridUnitTest-v0',
+#     entry_point='minerl.env:MineRLEnv',
+#     kwargs={
+#         'xml': os.path.join(missions_dir, 'grid_unit_test.xml'),
+#         'observation_space': spaces.Dict({
+#             'pov': spaces.Box(low=0, high=255, shape=(64, 64, 3), dtype=np.uint8),
+#             'XPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
+#             'YPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
+#             'ZPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
+#             'grid': spaces.MultiDiscrete([3, 3, 3]),
+#         }),
+#         'action_space': spaces.Dict(spaces={
+#             "forward": spaces.Discrete(2), 
+#             "back": spaces.Discrete(2), 
+#             "left": spaces.Discrete(2), 
+#             "right": spaces.Discrete(2),
+#         }),
+#         'docstr': """TODO"""
+#     },
+#     max_episode_steps=20,
+# )
+
+# register(
+#     id='MineRLStairsUnitTest-v0',
+#     entry_point='minerl.env:MineRLEnv',
+#     kwargs={
+#         'xml': os.path.join(missions_dir, 'stairs_unit_test.xml'),
+#         'observation_space': spaces.Dict({
+#             'pov': spaces.Box(low=0, high=255, shape=(64, 64, 3), dtype=np.uint8),
+#             'XPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
+#             'YPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
+#             'ZPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
+#             'grid': spaces.MultiDiscrete([3, 3, 3]),
+#         }),
+#         'action_space': spaces.Dict(spaces={
+#             "forward": spaces.Discrete(2), 
+#             "back": spaces.Discrete(2), 
+#             "left": spaces.Discrete(2), 
+#             "right": spaces.Discrete(2),
+#             "jump" : spaces.Discrete(2),
+#         }),
+#         'docstr': """TODO"""
+#     },
+#     max_episode_steps=20,
+# )
+
+# register(
+#     id='MineRLSafetyUnitTest-v0',
+#     entry_point='minerl.env:MineRLEnv',
+#     kwargs={
+#         'xml': os.path.join(missions_dir, 'safety_unit_test.xml'),
+#         'observation_space': spaces.Dict({
+#             'pov': spaces.Box(low=0, high=255, shape=(64, 64, 3), dtype=np.uint8),
+#             'XPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
+#             'YPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
+#             'ZPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
+#             'grid': spaces.MultiDiscrete([3, 3, 3]),
+#         }),
+#         'action_space': spaces.Dict(spaces={
+#             "forward": spaces.Discrete(2), 
+#             "back": spaces.Discrete(2), 
+#             "left": spaces.Discrete(2), 
+#             "right": spaces.Discrete(2),
+#             "jump" : spaces.Discrete(2),
+#         }),
+#         'docstr': """TODO"""
+#     },
+#     max_episode_steps=20,
+# )
+

@@ -27,6 +27,9 @@ class GridWorldWrapper(gym.Wrapper):
             obs, reward, done, info = self.step_in_env(inner_action)
             self.position = np.array([obs['XPos'], obs['YPos'], obs['ZPos']])
 
+            if done:
+                break
+
             if np.sqrt(np.sum((self.position - target_position)**2)) < self.threshold:
                 break
 
@@ -56,10 +59,16 @@ class GridWorldWrapper(gym.Wrapper):
         return obs, reward, done, debug_info
 
     def discretize_position(self, position):
-        p0 = (position[0] - 0.5).round().astype(np.int64)
-        p1 = position[1].astype(np.int64)
-        p2 = (position[2] - 0.5).round().astype(np.int64)
-        return np.array([p0, p1, p2], dtype=np.int64)
+        # print("position:",  position)
+        new_p = []
+        for p in position:
+            if p.is_integer():
+                new_p.append(p - 1)
+            else:
+                new_p.append(np.floor(p))
+        discretized_position = np.array(new_p, dtype=np.int64)
+        # print("discretized_position:", discretized_position)
+        return discretized_position
 
     def get_target_position(self, position, action):
         action_directions = np.zeros(3)
