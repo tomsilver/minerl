@@ -512,7 +512,7 @@ register(
 
 
 register(
-    id='MineRLForagingGrid-v0',
+    id='MineRLForaging-v0',
     entry_point='minerl.env:MineRLEnv',
     kwargs={
         'xml': os.path.join(missions_dir, 'foraging.xml'),
@@ -531,7 +531,7 @@ register(
         }),
         'docstr': """TODO"""
     },
-    max_episode_steps=20,
+    max_episode_steps=250,
 )
 
 register(
