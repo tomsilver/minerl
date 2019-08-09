@@ -1,21 +1,18 @@
+from agent import AgentWrapper
+
 import numpy as np
 import imageio
 import matplotlib.pyplot as plt
 
 
 
-class GridBuildingAgent(object):
-    def __init__(self, action_space, grid_mins=(-2, -1, -2), grid_maxs=(2, -1, 2)):
-        self.action_space = action_space
+class GridBuildingAgentWrapper(AgentWrapper):
+    def __init__(self, agent, grid_mins=(-2, -1, -2), grid_maxs=(2, -1, 2)):
+        AgentWrapper.__init__(self, agent)
 
         self.grid_mins = grid_mins
         self.grid_maxs = grid_maxs
 
-
-    def __call__(self, obs):
-        action = self.action_space.sample()
-
-        return action
 
     def reset(self, obs):
         self.pos_to_ore = {}
@@ -24,19 +21,26 @@ class GridBuildingAgent(object):
 
         self.process_obs(obs)
 
+        return AgentWrapper.reset(self, obs)
+
     def process_obs(self, obs):
         pos = obs['position']
         grid = tuple(obs['grid'])
 
-        shape = 1 + np.subtract(self.grid_maxs, self.grid_mins)
-        shape[1], shape[2] = shape[2], shape[1]
-        arr = np.array(grid).reshape(shape)
-        arr = np.swapaxes(arr, 1, 2)
-        arr = np.swapaxes(arr, 0, 2)
+        window_x_min, window_y_min, window_z_min = self.grid_mins
+        window_x_max, window_y_max, window_z_max = self.grid_maxs
 
-        for i, xo in enumerate(range(self.grid_mins[0], self.grid_maxs[0] + 1)):
-            for j, yo in enumerate(range(self.grid_mins[1], self.grid_maxs[1] + 1)):
-                for k, zo in enumerate(range(self.grid_mins[2], self.grid_maxs[2] + 1)):
+        indices_i = list(range(self.grid_maxs[0], self.grid_mins[0] - 1, -1))
+        indices_j = list(range(self.grid_mins[1], self.grid_maxs[1] + 1))
+        indices_k = list(range(self.grid_maxs[2], self.grid_mins[2] - 1, -1))
+
+        shape = 1 + np.subtract(self.grid_maxs, self.grid_mins)
+        arr = np.array(grid).reshape(shape)
+        arr = np.rot90(arr, k=2, axes=(0, 2))
+
+        for i, zo in enumerate(indices_i):
+            for j, yo in enumerate(indices_j):
+                for k, xo in enumerate(indices_k):
                     ore = arr[i, j, k]
                     p = (x, y, z) = (pos[0] + xo, pos[1] + yo, pos[2] + zo)
                     if p in self.pos_to_ore:
@@ -45,7 +49,7 @@ class GridBuildingAgent(object):
                             print("Pos:", p)
                             print("Old:", self.pos_to_ore[p])
                             print("New:", ore)
-                            import pdb; pdb.set_trace()
+                            # import pdb; pdb.set_trace()
                     else:
                         self.pos_to_ore[p] = ore
 
@@ -59,22 +63,27 @@ class GridBuildingAgent(object):
 
     def observe(self, obs, reward, done, info):
         self.process_obs(obs)
+        return AgentWrapper.observe(self, obs, reward, done, info)
 
     def finish_episode(self):
-        full_grid = np.full((self.max_x - self.min_x + 1, 
-            self.max_y - self.min_y + 1, self.max_z - self.min_z + 1), 
+        full_grid = np.full((self.max_z - self.min_z + 1, 
+            self.max_y - self.min_y + 1, self.max_x - self.min_x + 1), 
             'unk', dtype='object')
 
         for (x, y, z), ore in self.pos_to_ore.items():
-            full_grid[x - self.min_x, y - self.min_y, z - self.min_z] = ore
+            full_grid[z - self.min_z, y - self.min_y, x - self.min_x] = ore
+
+        full_grid = np.rot90(full_grid, k=2, axes=(0, 2))
 
         for vertical_plane in range(full_grid.shape[1]):
             draw_vertical_plane(full_grid[:, vertical_plane], 
                 'imgs/plane{}.png'.format(vertical_plane))
 
+        return AgentWrapper.finish_episode(self)
 
 
-colors = {'leaves': (50, 200, 50), 'dirt': (210, 105, 30), 'stone': (100, 100, 100), 'grass': (0, 255, 0), 'unk': (0, 0, 0), 'air': (255, 255, 255), 'tallgrass': (100, 250, 100), 'brown_mushroom': (128, 0, 128), 'double_plant': (123, 200, 75), 'log': (200, 160, 20), 'log2' : (210, 140, 20), 'deadbush': (100, 80, 10), 'water' : (0,0,255), 'sand' : (210,180,140), 'gravel' : (40,40,40), 'clay' : (46,52,60), 'yellow_flower' : (255, 255, 0), 'red_flower' : (255, 0, 0)}
+
+colors = {'leaves': (50, 200, 50), 'dirt': (210, 105, 30), 'stone': (100, 100, 100), 'grass': (0, 255, 0), 'unk': (0, 0, 0), 'air': (255, 255, 255), 'tallgrass': (100, 250, 100), 'brown_mushroom': (128, 0, 128), 'double_plant': (123, 200, 75), 'log': (200, 160, 20), 'log2' : (210, 140, 20), 'deadbush': (100, 80, 10), 'water' : (0,0,255), 'sand' : (210,180,140), 'gravel' : (40,40,40), 'clay' : (46,52,60), 'yellow_flower' : (255, 255, 0), 'red_flower' : (255, 0, 0), 'diamond_block' : (185, 242, 255), 'glass' : (255, 185, 242)}
 def draw_vertical_plane(grid, outfile):
     plane_img = np.zeros((grid.shape[0], grid.shape[1], 3), dtype=np.uint8)
 

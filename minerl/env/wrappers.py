@@ -56,7 +56,6 @@ class GridWorldWrapper(gym.Wrapper):
         return obs, reward, done, debug_info
 
     def discretize_position(self, position):
-        print('cont position:', position)
         return (position - 0.5).round().astype(np.int64)
 
     def get_target_position(self, position, action):
