@@ -489,14 +489,16 @@ register(
 #     CONTRIBUTED     #
 #######################
 contributed_env_infos = [
-    ('MineRLFlatGrid-v0', 'flatgrid.xml', 20),
-    ('MineRLForaging-v0', 'foraging.xml', 250),
-    ('MineRLGridUnitTest-v0', 'grid_unit_test.xml', 20),
-    ('MineRLStairsUnitTest-v0', 'stairs_unit_test.xml', 20),
-    ('MineRLSafetyUnitTest-v0', 'safety_unit_test.xml', 20),
+    ('MineRLFlatGrid-v0', 'flatgrid.xml'),
+    ('MineRLForaging-v0', 'foraging.xml'),
+    ('MineRLGridUnitTest-v0', 'grid_unit_test.xml'),
+    ('MineRLStairsUnitTest-v0', 'stairs_unit_test.xml'),
+    ('MineRLSafetyUnitTest-v0', 'safety_unit_test.xml'),
+    ('MineRLSafetyUnitTest2-v0', 'safety_unit_test2.xml'),
+    ('MineRLSafetyUnitTest3-v0', 'safety_unit_test3.xml'),
 ]
 
-for env_id, xml, max_episode_steps in contributed_env_infos:
+for env_id, xml in contributed_env_infos:
     register(
         id=env_id,
         entry_point='minerl.env:MineRLEnv',
@@ -518,7 +520,6 @@ for env_id, xml, max_episode_steps in contributed_env_infos:
             }),
             'docstr': """TODO"""
         },
-        max_episode_steps=max_episode_steps,
     )
 
 # register(

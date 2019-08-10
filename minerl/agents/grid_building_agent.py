@@ -13,7 +13,6 @@ class GridBuildingAgentWrapper(AgentWrapper):
         self.grid_mins = grid_mins
         self.grid_maxs = grid_maxs
 
-
     def reset(self, obs):
         self.pos_to_ore = {}
         self.min_x, self.min_y, self.min_z = np.inf, np.inf, np.inf
@@ -25,7 +24,7 @@ class GridBuildingAgentWrapper(AgentWrapper):
 
     def process_obs(self, obs):
         pos = obs['position']
-        grid = tuple(obs['grid'])
+        arr = obs['grid_arr']
 
         window_x_min, window_y_min, window_z_min = self.grid_mins
         window_x_max, window_y_max, window_z_max = self.grid_maxs
@@ -33,10 +32,6 @@ class GridBuildingAgentWrapper(AgentWrapper):
         indices_i = list(range(self.grid_maxs[0], self.grid_mins[0] - 1, -1))
         indices_j = list(range(self.grid_mins[1], self.grid_maxs[1] + 1))
         indices_k = list(range(self.grid_maxs[2], self.grid_mins[2] - 1, -1))
-
-        shape = 1 + np.subtract(self.grid_maxs, self.grid_mins)
-        arr = np.array(grid).reshape(shape)
-        arr = np.rot90(arr, k=2, axes=(0, 2))
 
         for i, zo in enumerate(indices_i):
             for j, yo in enumerate(indices_j):
@@ -49,7 +44,7 @@ class GridBuildingAgentWrapper(AgentWrapper):
                             print("Pos:", p)
                             print("Old:", self.pos_to_ore[p])
                             print("New:", ore)
-                            # import pdb; pdb.set_trace()
+                            import pdb; pdb.set_trace()
                     else:
                         self.pos_to_ore[p] = ore
 

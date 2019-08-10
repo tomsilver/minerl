@@ -2,25 +2,38 @@ from grid_building_agent import GridBuildingAgentWrapper
 from simple_agent_wrappers import AlwaysJumpingAgent, SafeAgentWrapper
 from random_agent import RandomAgent
 from sequential_agent import SequentialAgent
-from minerl.env.wrappers import GridWorldWrapper
-
+from minerl.env.wrappers import GridWorldWrapper, VideoWrapper
 from utils import run_single_episode
+
+from gym.wrappers import TimeLimit
 
 import gym
 import minerl
 import numpy as np
 import random
+import logging
+import coloredlogs
+coloredlogs.install(logging.INFO)
 
 seed = 0
 np.random.seed(seed)
 random.seed(seed)
 
+grid_mins = (-3, -1, -2)
+grid_maxs = (3, -1, 2)
+viewpoint = 0
+max_episode_steps = 20
+
 if __name__ == "__main__":
     # env = gym.make('MineRLGridUnitTest-v0')
     # env = gym.make('MineRLForaging-v0')
-    # env = gym.make('MineRLStairsUnitTest-v0')
-    env = gym.make('MineRLSafetyUnitTest-v0')
-    env = GridWorldWrapper(env)
+    env = gym.make('MineRLStairsUnitTest-v0')
+    # env = gym.make('MineRLSafetyUnitTest-v0')
+    # env = gym.make('MineRLSafetyUnitTest2-v0')
+    # env = gym.make('MineRLSafetyUnitTest3-v0')
+    env = GridWorldWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
+    env = TimeLimit(env, max_episode_steps)
+    env = VideoWrapper(env, 'imgs/foraging_demo_pov.gif', fps=30, viewpoint=viewpoint)
 
     env.seed(seed)
 
@@ -35,13 +48,10 @@ if __name__ == "__main__":
 
     # agent = RandomAgent(env.action_space)
     agent = SequentialAgent(env.action_space, action_sequence, final_action=final_action)
-    # agent = AlwaysJumpingAgent(agent)
+    agent = AlwaysJumpingAgent(agent)
     agent = SafeAgentWrapper(agent)
-    agent = GridBuildingAgentWrapper(agent)
+    agent = GridBuildingAgentWrapper(agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
 
     video_out_path = 'imgs/foraging_demo.gif'
-    max_num_steps = 500
 
-    rewards = run_single_episode(env, agent, record_video=True, 
-        video_out_path=video_out_path, max_num_steps=max_num_steps)
-    print("Wrote out video to {}.".format(video_out_path))
+    rewards = run_single_episode(env, agent)
