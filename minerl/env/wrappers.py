@@ -88,7 +88,12 @@ class GridWorldWrapper(gym.Wrapper):
 
     def grid_to_array(self, grid):
         shape = 1 + np.subtract(self.grid_maxs, self.grid_mins)
-        arr = np.array(grid).reshape(shape)
+
+        arr = np.array(grid).reshape((shape[2], shape[0], shape[1]), order='F')
+        # print(arr[:, :, 1])
+        # import pdb; pdb.set_trace()
+        arr = np.moveaxis(arr, 0, -1)
+        # import pdb; pdb.set_trace()
         arr = np.rot90(arr, k=2, axes=(0, 2))
         return arr
 

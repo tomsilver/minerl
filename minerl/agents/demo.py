@@ -19,15 +19,15 @@ seed = 0
 np.random.seed(seed)
 random.seed(seed)
 
-grid_mins = (-3, -1, -2)
-grid_maxs = (3, -1, 2)
+grid_mins = (-3, -2, -2)
+grid_maxs = (3, 0, 2)
 viewpoint = 0
 max_episode_steps = 20
 
 if __name__ == "__main__":
-    # env = gym.make('MineRLGridUnitTest-v0')
+    env = gym.make('MineRLGridUnitTest-v0')
     # env = gym.make('MineRLForaging-v0')
-    env = gym.make('MineRLStairsUnitTest-v0')
+    # env = gym.make('MineRLStairsUnitTest-v0')
     # env = gym.make('MineRLSafetyUnitTest-v0')
     # env = gym.make('MineRLSafetyUnitTest2-v0')
     # env = gym.make('MineRLSafetyUnitTest3-v0')
@@ -38,17 +38,17 @@ if __name__ == "__main__":
     env.seed(seed)
 
     # action_strs = ['back', 'left', 'forward', 'forward', 'right', 'right', 'back', 'back', 'left']
-    action_strs = ['forward'] * 6 # + ['back'] * 6
+    # action_strs = ['forward'] * 6 # + ['back'] * 6
     action_sequence = []
-    for action_str in action_strs:
-        action = env.action_space.noop()
-        action[action_str] = 1
-        action_sequence.append(action)
+    # for action_str in action_strs:
+    #     action = env.action_space.noop()
+    #     action[action_str] = 1
+    #     action_sequence.append(action)
     final_action = env.action_space.noop()
 
     # agent = RandomAgent(env.action_space)
     agent = SequentialAgent(env.action_space, action_sequence, final_action=final_action)
-    agent = AlwaysJumpingAgent(agent)
+    # agent = AlwaysJumpingAgent(agent)
     agent = SafeAgentWrapper(agent)
     agent = GridBuildingAgentWrapper(agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
 
