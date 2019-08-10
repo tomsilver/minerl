@@ -44,7 +44,7 @@ class GridBuildingAgentWrapper(AgentWrapper):
                             print("Pos:", p)
                             print("Old:", self.pos_to_ore[p])
                             print("New:", ore)
-                            import pdb; pdb.set_trace()
+                            # import pdb; pdb.set_trace()
                     else:
                         self.pos_to_ore[p] = ore
 

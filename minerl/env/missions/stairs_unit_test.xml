@@ -35,12 +35,12 @@
     <AgentSection mode="Survival">
         <Name>MineRLAgent</Name>
         <AgentStart>
-            <Placement x="0.5" y="4" z="0.5" pitch="0" yaw="0"/>
+            <Placement x="0.5" y="4" z="-1.5" pitch="0" yaw="0"/>
         </AgentStart>
         <AgentHandlers>
             <VideoProducer want_depth="false" viewpoint="$(VIEWPOINT)">
-                <Width>64</Width>
-                <Height>64</Height>
+                <Width>512</Width>
+                <Height>512</Height>
             </VideoProducer>
             <FileBasedPerformanceProducer/>
             <ObservationFromFullInventory flat="false"/>

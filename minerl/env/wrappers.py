@@ -44,13 +44,14 @@ class GridWorldWrapper(gym.Wrapper):
 
     def reset(self):
         obs = self.env.reset()
+        self.position = np.array([obs['XPos'], obs['YPos'], obs['ZPos']])
 
         # Get to a grid location
-        self.position = np.array([obs['XPos'], obs['YPos'], obs['ZPos']])
         target_position = self.get_target_position(self.position, self.action_space.noop())
 
         obs, _, _, _ = self.step_to_target(target_position)
 
+        self.position = np.array([obs['XPos'], obs['YPos'], obs['ZPos']])
         obs['position'] = self.discretize_position(self.position)
         obs['grid_arr'] = self.grid_to_array(obs['grid'])
 
@@ -58,7 +59,6 @@ class GridWorldWrapper(gym.Wrapper):
 
     def step(self, action):
         obs, reward, done, info = self.step_in_env(action)
-        self.position = np.array([obs['XPos'], obs['YPos'], obs['ZPos']])
 
         target_position = self.get_target_position(self.position, action)
 
@@ -68,6 +68,7 @@ class GridWorldWrapper(gym.Wrapper):
         for _ in range(5):
             obs, reward, done, debug_info = self.step_in_env(self.action_space.noop())
 
+        self.position = np.array([obs['XPos'], obs['YPos'], obs['ZPos']])
         obs['position'] = self.discretize_position(self.position)
         obs['grid_arr'] = self.grid_to_array(obs['grid'])
 
@@ -75,14 +76,14 @@ class GridWorldWrapper(gym.Wrapper):
 
     def discretize_position(self, position):
         new_p = []
-        print("position:", position)
+        # print("position:", position)
         for p in position:
             if p.is_integer():
                 new_p.append(p - 1)
             else:
                 new_p.append(np.floor(p))
         discretized_position = np.array(new_p, dtype=np.int64)
-        print("discretized_position:", discretized_position)
+        # print("discretized_position:", discretized_position)
         return discretized_position
 
     def grid_to_array(self, grid):
