@@ -54,8 +54,8 @@
             <CameraCommands/>
             <ObservationFromGrid>
                <Grid name="grid">
-                  <min x="-2" y="-1" z="-2" />
-                  <max x="2" y="-1" z="2" />
+                  <min x="$(GRID_MIN_X)" y="$(GRID_MIN_Y)" z="$(GRID_MIN_Z)" />
+                  <max x="$(GRID_MAX_X)" y="$(GRID_MAX_Y)" z="$(GRID_MAX_Z)" />
                </Grid>
             </ObservationFromGrid>
 
