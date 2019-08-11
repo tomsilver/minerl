@@ -1,4 +1,3 @@
-import tempfile
 import gym
 import numpy as np
 import imageio
@@ -13,14 +12,6 @@ class GridWorldWrapper(gym.Wrapper):
 
         self.grid_mins = grid_mins
         self.grid_maxs = grid_maxs
-        env.unwrapped.xml_file = fill_in_env_xml(env.xml_file, {
-            'GRID_MIN_X' : grid_mins[2],
-            'GRID_MIN_Y' : grid_mins[1],
-            'GRID_MIN_Z' : grid_mins[0],
-            'GRID_MAX_X' : grid_maxs[2],
-            'GRID_MAX_Y' : grid_maxs[1],
-            'GRID_MAX_Z' : grid_maxs[0],
-        })
 
         self.max_inner_steps = max_inner_steps
         self.threshold = threshold
@@ -129,40 +120,27 @@ class GridWorldWrapper(gym.Wrapper):
         return action
 
 
-def fill_in_env_xml(xml_file, fill_ins):
-    with open(xml_file, 'r') as f:
-        xml = f.read()
-    
-    for placeholder, fill_in in fill_ins.items(): 
-        xml = xml.replace('$({})'.format(placeholder), str(fill_in))
-
-    new_f = tempfile.NamedTemporaryFile(mode='w', delete=False)
-    new_f.write(xml)
-
-    return new_f.name
-
 
 class VideoWrapper(gym.Wrapper):
-    def __init__(self, env, out_path, fps=30, obs_key='pov', viewpoint=0):
+    def __init__(self, env, out_path, fps=30):
         super().__init__(env)
         self.out_path = out_path
         self.fps = fps
-        self.obs_key = obs_key
-        self.viewpoint = viewpoint
-
-        env.unwrapped.xml_file = fill_in_env_xml(env.xml_file, {
-            'VIEWPOINT' : viewpoint
-        })
 
     def reset(self):
-        self.images = []
         obs = super().reset()
-        self.images.append(obs[self.obs_key])
+
+        self.images = []
+        img = super().render()
+        self.images.append(img)
+
         return obs
 
     def step(self, action):
         obs, reward, done, debug_info = super().step(action)
-        self.images.append(obs[self.obs_key])
+
+        img = super().render()
+        self.images.append(img)
 
         if done:
             imageio.mimsave(self.out_path, self.images, fps=self.fps)

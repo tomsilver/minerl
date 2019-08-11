@@ -1,5 +1,6 @@
 import imageio
 import numpy as np
+import tempfile
 
 def run_single_episode(env, agent):
     video_frames = []
@@ -25,3 +26,15 @@ def run_single_episode(env, agent):
     env.close()
 
     return rewards
+
+def fill_in_xml(xml_file, fill_ins):
+    with open(xml_file, 'r') as f:
+        xml = f.read()
+    
+    for placeholder, fill_in in fill_ins.items(): 
+        xml = xml.replace('$({})'.format(placeholder), str(fill_in))
+
+    new_f = tempfile.NamedTemporaryFile(mode='w', delete=False)
+    new_f.write(xml)
+
+    return new_f.name
