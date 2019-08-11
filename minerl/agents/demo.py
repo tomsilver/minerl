@@ -22,10 +22,11 @@ def grid_unit_test():
 
     grid_mins = (-2, -1, -2)
     grid_maxs = (2, -1, 2)
-    viewpoint = 0
+    viewpoint = 1
     max_episode_steps = 20
 
     env = gym.make('MineRLGridUnitTest-v0')
+    env = VideoWrapper(env, 'imgs/inner_grid_unit_test.mp4', fps=30)
     env = GridWorldWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
     env = TimeLimit(env, max_episode_steps)
     env = VideoWrapper(env, 'imgs/grid_unit_test.gif', fps=30)
@@ -45,10 +46,10 @@ def grid_unit_test():
     action_strs = ['back', 'left', 'forward', 'forward', 'right', 'right', 'back', 'back', 'left']
     action_sequence = []
     for action_str in action_strs:
-        action = env.action_space.noop()
+        action = env.action_space.no_op()
         action[action_str] = 1
         action_sequence.append(action)
-    final_action = env.action_space.noop()
+    final_action = env.action_space.no_op()
 
     agent = SequentialAgent(env.action_space, action_sequence, final_action=final_action)
     agent = GridBuildingAgentWrapper(agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
@@ -66,6 +67,7 @@ def stairs_unit_test():
     max_episode_steps = 20
 
     env = gym.make('MineRLStairsUnitTest-v0')
+    env = VideoWrapper(env, 'imgs/inner_stairs_unit_test.mp4', fps=30)
     env = GridWorldWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
     env = TimeLimit(env, max_episode_steps)
     env = VideoWrapper(env, 'imgs/stairs_unit_test.gif', fps=30)
@@ -85,10 +87,10 @@ def stairs_unit_test():
     action_strs = ['forward'] * 10 + ['back'] * 10
     action_sequence = []
     for action_str in action_strs:
-        action = env.action_space.noop()
+        action = env.action_space.no_op()
         action[action_str] = 1
         action_sequence.append(action)
-    final_action = env.action_space.noop()
+    final_action = env.action_space.no_op()
 
     agent = SequentialAgent(env.action_space, action_sequence, final_action=final_action)
     agent = AlwaysJumpingAgent(agent)
@@ -103,10 +105,11 @@ def safety_unit_test():
 
     grid_mins = (-2, -2, -2)
     grid_maxs = (2, 2, 2)
-    viewpoint = 1
+    viewpoint = 2
     max_episode_steps = 20
 
     env = gym.make('MineRLSafetyUnitTest-v0')
+    env = VideoWrapper(env, 'imgs/inner_safety_unit_test.mp4', fps=30)
     env = GridWorldWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
     env = TimeLimit(env, max_episode_steps)
     env = VideoWrapper(env, 'imgs/safety_unit_test.gif', fps=30)
@@ -126,10 +129,10 @@ def safety_unit_test():
     action_strs = ['forward'] * 10
     action_sequence = []
     for action_str in action_strs:
-        action = env.action_space.noop()
+        action = env.action_space.no_op()
         action[action_str] = 1
         action_sequence.append(action)
-    final_action = env.action_space.noop()
+    final_action = env.action_space.no_op()
 
     agent = SequentialAgent(env.action_space, action_sequence, final_action=final_action)
     agent = SafeAgentWrapper(agent)
@@ -144,10 +147,11 @@ def safety_unit_test2():
 
     grid_mins = (-2, -2, -2)
     grid_maxs = (2, 2, 2)
-    viewpoint = 1
+    viewpoint = 2
     max_episode_steps = 20
 
     env = gym.make('MineRLSafetyUnitTest2-v0')
+    env = VideoWrapper(env, 'imgs/inner_safety_unit_test2.mp4', fps=30)
     env = GridWorldWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
     env = TimeLimit(env, max_episode_steps)
     env = VideoWrapper(env, 'imgs/safety_unit_test2.gif', fps=30)
@@ -167,10 +171,10 @@ def safety_unit_test2():
     action_strs = ['left'] * 10
     action_sequence = []
     for action_str in action_strs:
-        action = env.action_space.noop()
+        action = env.action_space.no_op()
         action[action_str] = 1
         action_sequence.append(action)
-    final_action = env.action_space.noop()
+    final_action = env.action_space.no_op()
 
     agent = SequentialAgent(env.action_space, action_sequence, final_action=final_action)
     agent = SafeAgentWrapper(agent)
@@ -189,6 +193,7 @@ def safety_unit_test3():
     max_episode_steps = 20
 
     env = gym.make('MineRLSafetyUnitTest3-v0')
+    env = VideoWrapper(env, 'imgs/inner_safety_unit_test3.mp4', fps=30)
     env = GridWorldWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
     env = TimeLimit(env, max_episode_steps)
     env = VideoWrapper(env, 'imgs/safety_unit_test3.gif', fps=30)
@@ -208,10 +213,10 @@ def safety_unit_test3():
     action_strs = ['forward'] * 10
     action_sequence = []
     for action_str in action_strs:
-        action = env.action_space.noop()
+        action = env.action_space.no_op()
         action[action_str] = 1
         action_sequence.append(action)
-    final_action = env.action_space.noop()
+    final_action = env.action_space.no_op()
 
     agent = SequentialAgent(env.action_space, action_sequence, final_action=final_action)
     agent = SafeAgentWrapper(agent)
@@ -230,6 +235,7 @@ def foraging_test():
     max_episode_steps = 250
 
     env = gym.make('MineRLForaging-v0')
+    env = VideoWrapper(env, 'imgs/inner_foraging_test.mp4', fps=30)
     env = GridWorldWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
     env = TimeLimit(env, max_episode_steps)
     env = VideoWrapper(env, 'imgs/foraging_test.gif', fps=30)

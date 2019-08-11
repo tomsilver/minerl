@@ -24,19 +24,19 @@ class SafeAgentWrapper(AgentWrapper):
         next_ore = obs['grid_arr'][next_rel_pos[0], next_rel_pos[1], next_rel_pos[2]]
 
         if next_ore in self.dangerous_ores:
-            return self.action_space.noop()
+            return self.action_space.no_op()
 
         # Dangerous ore below?
         next_ore_below = obs['grid_arr'][next_rel_pos[0], next_rel_pos[1] - 1, next_rel_pos[2]]
 
         if next_ore_below in self.dangerous_ores:
-            return self.action_space.noop()
+            return self.action_space.no_op()
 
         # Falling into water or air?
         next_ore_below_below = obs['grid_arr'][next_rel_pos[0], next_rel_pos[1] - 2, next_rel_pos[2]]
 
         if next_ore_below_below in self.falling_ores:
-            return self.action_space.noop()
+            return self.action_space.no_op()
 
         # Good to go
         return action

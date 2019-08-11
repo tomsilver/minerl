@@ -1,3 +1,5 @@
+from minerl.env import spaces
+
 import gym
 import numpy as np
 import imageio
@@ -7,6 +9,8 @@ import imageio
 class GridWorldWrapper(gym.Wrapper):
     """A wrapper around MineRLEnv so that it can be treated as a discrete gridworld.
     """
+    action_scale = 0.8
+
     def __init__(self, env, max_inner_steps=25, threshold=0.01, grid_mins=(-2, -1, -2), grid_maxs=(2, -1, 2)):
         super().__init__(env)
 
@@ -16,20 +20,29 @@ class GridWorldWrapper(gym.Wrapper):
         self.max_inner_steps = max_inner_steps
         self.threshold = threshold
 
+        self.action_space = spaces.Dict(spaces={
+            "forward": spaces.Discrete(2), 
+            "back": spaces.Discrete(2), 
+            "left": spaces.Discrete(2), 
+            "right": spaces.Discrete(2),
+            "jump": spaces.Discrete(2),
+        })
+
     def step_in_env(self, action):
         return self.env.step(action)
 
     def step_to_target(self, target_position):
         for _ in range(self.max_inner_steps):
             inner_action = self.get_action_towards_target(self.position, target_position)
+            
             obs, reward, done, info = self.step_in_env(inner_action)
             self.position = np.array([obs['XPos'], obs['YPos'], obs['ZPos']])
 
             if done:
-                break
+                return obs, reward, done, info
 
             if np.sqrt(np.sum((self.position - target_position)**2)) < self.threshold:
-                break
+                return obs, reward, done, info
 
         return obs, reward, done, info
 
@@ -38,7 +51,7 @@ class GridWorldWrapper(gym.Wrapper):
         self.position = np.array([obs['XPos'], obs['YPos'], obs['ZPos']])
 
         # Get to a grid location
-        target_position = self.get_target_position(self.position, self.action_space.noop())
+        target_position = self.get_target_position(self.position, self.action_space.no_op())
 
         obs, _, _, _ = self.step_to_target(target_position)
 
@@ -49,15 +62,16 @@ class GridWorldWrapper(gym.Wrapper):
         return obs
 
     def step(self, action):
-        obs, reward, done, info = self.step_in_env(action)
+        if action['jump']:
+            jump_action = self.env.action_space.no_op()
+            jump_action['jump'] = 1
+            self.step_in_env(jump_action)
 
         target_position = self.get_target_position(self.position, action)
 
         obs, reward, done, debug_info = self.step_to_target(target_position)
 
-        # Always let settle b/c jumping observations are unreliable
-        for _ in range(5):
-            obs, reward, done, debug_info = self.step_in_env(self.action_space.noop())
+        obs, reward, done, debug_info = self.finish_stepping()
 
         self.position = np.array([obs['XPos'], obs['YPos'], obs['ZPos']])
         obs['position'] = self.discretize_position(self.position)
@@ -102,23 +116,22 @@ class GridWorldWrapper(gym.Wrapper):
 
         return target_position
 
-    def get_action_towards_target(self, position, target_position):
-        action = self.action_space.noop()
+    def finish_stepping(self):
+        # Always let settle b/c jumping observations are unreliable
+        for _ in range(5):
+            obs, reward, done, debug_info = self.step_in_env(self.env.action_space.no_op())
+        return obs, reward, done, debug_info
 
-        if abs(target_position[2] - position[2]) > self.threshold:
-            if target_position[2] > position[2]:
-                action['forward'] = 1
-            else:
-                action['back'] = 1
+    def get_action_towards_target(self, position, target_position):
+        action = self.env.action_space.no_op()
 
         if abs(target_position[0] - position[0]) > self.threshold:
-            if target_position[0] > position[0]:
-                action['left'] = 1
-            else:
-                action['right'] = 1
+            action['strafe'] = self.action_scale * (position[0] - target_position[0])
+
+        if abs(target_position[2] - position[2]) > self.threshold:
+            action['move'] = self.action_scale * (target_position[2] - position[2])
 
         return action
-
 
 
 class VideoWrapper(gym.Wrapper):
@@ -142,10 +155,11 @@ class VideoWrapper(gym.Wrapper):
         img = super().render()
         self.images.append(img)
 
-        if done:
-            imageio.mimsave(self.out_path, self.images, fps=self.fps)
-            print("Wrote out video to {}.".format(self.out_path))
-
         return obs, reward, done, debug_info
+
+    def close(self):
+        imageio.mimsave(self.out_path, self.images, fps=self.fps)
+        print("Wrote out video to {}.".format(self.out_path))
+        return super().close()
 
 

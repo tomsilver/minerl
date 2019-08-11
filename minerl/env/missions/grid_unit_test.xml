@@ -45,12 +45,7 @@
             <FileBasedPerformanceProducer/>
             <ObservationFromFullInventory flat="false"/>
             <ObservationFromFullStats/>
-            <HumanLevelCommands>
-                <ModifierList type="deny-list"> 
-                <command>moveMouse</command> 
-                <command>inventory</command> 
-                </ModifierList>
-            </HumanLevelCommands>
+            <ContinuousMovementCommands/>
             <CameraCommands/>
             <ObservationFromGrid>
                <Grid name="grid">

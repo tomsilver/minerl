@@ -396,6 +396,8 @@ class MineRLEnv(gym.Env):
             action_str.append(
                 "{} {}".format(act, str(action_in[act])))
 
+        # print("action_str:", "\n".join(action_str))
+
         return "\n".join(action_str)
 
     @staticmethod
@@ -518,7 +520,6 @@ class MineRLEnv(gym.Env):
         self._seed = seed
 
     def step(self, action):
-
         withinfo = MineRLEnv.STEP_OPTIONS == 0 or MineRLEnv.STEP_OPTIONS == 2
 
         # Process the actions.
