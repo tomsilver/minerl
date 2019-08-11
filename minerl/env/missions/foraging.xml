@@ -44,7 +44,7 @@
             </Inventory>
         </AgentStart>
         <AgentHandlers>
-            <VideoProducer want_depth="false">
+            <VideoProducer want_depth="false" viewpoint="$(VIEWPOINT)">
                 <Width>64</Width>
                 <Height>64</Height>
             </VideoProducer>

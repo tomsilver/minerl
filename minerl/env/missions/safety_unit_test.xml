@@ -33,7 +33,7 @@
             <Placement x="0.5" y="4" z="0.5" pitch="0" yaw="0"/>
         </AgentStart>
         <AgentHandlers>
-            <VideoProducer want_depth="false">
+            <VideoProducer want_depth="false" viewpoint="$(VIEWPOINT)">
                 <Width>64</Width>
                 <Height>64</Height>
             </VideoProducer>
