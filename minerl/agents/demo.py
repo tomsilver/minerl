@@ -531,6 +531,73 @@ def open_room_test(agent_type='exploring'):
     run_single_episode(env, final_agent)
 
 
+def bumpy_room_test(agent_type='exploring'):
+    seed = 1
+    np.random.seed(seed)
+    random.seed(seed)
+
+    grid_mins = (-1, -1, -1)
+    grid_maxs = (1, 1, 1)
+    viewpoint = 1
+    max_episode_steps = 50
+
+    env = gym.make('MineRLBumpyRoomTest-v0')
+    env = GridWorldWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
+    env = TimeLimit(env, max_episode_steps)
+    env = VideoWrapper(env, 'imgs/bumpy_room_test.gif', fps=3)
+
+    env.unwrapped.xml_file = fill_in_xml(env.xml_file, {
+        'GRID_MIN_X' : grid_mins[2],
+        'GRID_MIN_Y' : grid_mins[1],
+        'GRID_MIN_Z' : grid_mins[0],
+        'GRID_MAX_X' : grid_maxs[2],
+        'GRID_MAX_Y' : grid_maxs[1],
+        'GRID_MAX_Z' : grid_maxs[0],
+        'VIEWPOINT' : viewpoint,
+    })
+
+    env.seed(seed)
+
+    if agent_type == 'random':
+        base_dir = 'imgs/bumpy_room/random_agent'
+        agent = RandomAgent(env.action_space)
+        agent = GridBuildingAgentWrapper(agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
+    
+    elif agent_type == 'exploring':
+        base_dir = 'imgs/bumpy_room/exploring_search_agent'
+        search_agent = ExploringSearchAgent(env.action_space)
+        search_agent = AlwaysJumpingAgent(search_agent)
+        agent = GridBuildingAgentWrapper(search_agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
+        search_agent.subscribe_to_grid_agent(agent)
+
+    else:
+        raise NotImplementedError()
+
+    time_counter = itertools.count()
+    planes = [1, 2, 3]
+    filenames = [[] for _ in planes]
+
+    max_bounds = (-5, 5, 1, 6, -5, 5)
+
+    def inner_fn(obs):
+        outdir = os.path.join(base_dir, '{}'.format(next(time_counter)))
+        for i, plane in enumerate(planes):
+            filenames[i].append(os.path.join(outdir, 'plane{}.png'.format(plane)))
+        if not os.path.exists(outdir):
+            os.makedirs(outdir)
+        agent.draw_grid_images(outdir=outdir, max_bounds=max_bounds)
+
+    def finish_fn():
+        for i, plane in enumerate(planes):
+            images = [imageio.imread(f) for f in filenames[i]]
+            outfile = os.path.join(base_dir, 'out{}.gif'.format(plane))
+            imageio.mimsave(outfile, images, fps=3)
+            print("Wrote out video to {}.".format(outfile))
+
+    final_agent = AgentObsWrapper(agent, inner_fn, finish_fn)
+
+    run_single_episode(env, final_agent)
+
 
 if __name__ == "__main__":
     # grid_unit_test()
@@ -543,4 +610,5 @@ if __name__ == "__main__":
     # pure_search_test()
     # search_maze_test()
     # search_ascending_maze_test()
-    open_room_test(agent_type='exploring')
+    # open_room_test(agent_type='exploring')
+    bumpy_room_test(agent_type='exploring')
