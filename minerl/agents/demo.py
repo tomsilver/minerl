@@ -640,7 +640,7 @@ def forage_explore():
     run_single_episode(env, agent)
 
 def visualize_3d_test():
-    seed = 1
+    seed = 2
     np.random.seed(seed)
     random.seed(seed)
 
@@ -716,11 +716,11 @@ def visualize_3d_test():
     # for i, (elev, azim) in enumerate(angles):
     #     ax.view_init(elev=elev, azim=azim)
     #     filename = os.path.join(base_dir, "view%d.png" % i)
-    #     plt.savefig(filename)
+    #     plt.savefig(filename, dpi=350)
     #     filenames.append(filename)
 
     # images = [imageio.imread(f) for f in filenames]
-    # outfile = os.path.join(base_dir, 'out.gif')
+    # outfile = os.path.join(base_dir, 'out.mp4')
     # imageio.mimsave(outfile, images, fps=5)
     # print("Wrote out video to {}.".format(outfile))
 

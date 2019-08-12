@@ -56,7 +56,7 @@ class SafeAgentWrapper(AgentWrapper):
 
     @staticmethod
     def is_safe(above_above_ore, above_ore, ore, below_ore, below_below_ore):
-        if above_above_ore != 'air':
+        if above_ore != 'air':
             return False
 
         if ore in ['lava', 'water']:

@@ -4,6 +4,21 @@ from simple_agent_wrappers import SafeAgentWrapper
 
 import numpy as np
 
+def ore_is_solid(ore):
+    if 'grass' in ore:
+        return True
+
+    if 'ore' in ore:
+        return True
+
+    if 'stone' in ore:
+        return True
+
+    if 'dirt' in ore:
+        return True
+
+    return False
+
 
 class SearchAgent(Agent):
 
@@ -12,44 +27,57 @@ class SearchAgent(Agent):
     def __call__(self, obs):
         pos_to_ore = self.grid_agent.pos_to_ore
         action_list = ['forward', 'back', 'left', 'right']
+        # action_effects = [
+        #     [(0, -1, 1), (0, 0, 1), (0, 1, 1)],  
+        #     [(0, -1, -1), (0, 0, -1), (0, 1, -1)], 
+        #     [(1, -1, 0), (1, 0, 0), (1, 1, 0)], 
+        #     [(-1, -1, 0), (-1, 0, 0), (-1, 1, 0)],
+        # ]
         action_effects = [
-            [(0, -1, 1), (0, 0, 1), (0, 1, 1)],  
-            [(0, -1, -1), (0, 0, -1), (0, 1, -1)], 
-            [(1, -1, 0), (1, 0, 0), (1, 1, 0)], 
-            [(-1, -1, 0), (-1, 0, 0), (-1, 1, 0)],
+            (0, 0, 1), (0, 0, -1), (1, 0, 0), (-1, 0, 0),
         ]
 
         def model(state, action):
-            for action_effect in action_effects[action_list.index(action)]:
-                possible_next_state = np.add(state, action_effect)
+            action_effect = action_effects[action_list.index(action)]
+            possible_next_state = np.add(state, action_effect)
 
-                if tuple(possible_next_state) in pos_to_ore:
-                    ore = pos_to_ore[tuple(possible_next_state)]
-                else:
-                    continue
+            if tuple(possible_next_state) in pos_to_ore:
+                ore = pos_to_ore[tuple(possible_next_state)]
+            else:
+                return state
 
-                if tuple(possible_next_state + [0, 2, 0]) in pos_to_ore:
-                    above_above_ore = pos_to_ore[tuple(possible_next_state + [0, 2, 0])]
-                else:
-                    above_above_ore = None
+            if tuple(possible_next_state + [0, 2, 0]) in pos_to_ore:
+                above_above_ore = pos_to_ore[tuple(possible_next_state + [0, 2, 0])]
+            else:
+                above_above_ore = None
 
-                if tuple(possible_next_state + [0, 1, 0]) in pos_to_ore:
-                    above_ore = pos_to_ore[tuple(possible_next_state + [0, 1, 0])]
-                else:
-                    above_ore = None
+            if tuple(possible_next_state + [0, 1, 0]) in pos_to_ore:
+                above_ore = pos_to_ore[tuple(possible_next_state + [0, 1, 0])]
+            else:
+                above_ore = None
 
-                if tuple(possible_next_state + [0, -1, 0]) in pos_to_ore:
-                    below_ore = pos_to_ore[tuple(possible_next_state + [0, -1, 0])]
-                else:
-                    below_ore = None
+            if tuple(possible_next_state + [0, -1, 0]) in pos_to_ore:
+                below_ore = pos_to_ore[tuple(possible_next_state + [0, -1, 0])]
+            else:
+                below_ore = None
 
-                if tuple(possible_next_state + [0, -2, 0]) in pos_to_ore:
-                    below_below_ore = pos_to_ore[tuple(possible_next_state + [0, -2, 0])]
-                else:
-                    below_below_ore = None
+            if tuple(possible_next_state + [0, -2, 0]) in pos_to_ore:
+                below_below_ore = pos_to_ore[tuple(possible_next_state + [0, -2, 0])]
+            else:
+                below_below_ore = None
 
-                if SafeAgentWrapper.is_safe(above_above_ore, above_ore, ore, below_ore, below_below_ore):
+            if SafeAgentWrapper.is_safe(above_above_ore, above_ore, ore, below_ore, below_below_ore):
+                
+                if not ore_is_solid(below_ore) and not ore_is_solid(ore):
+                    # print("predicting a step down")
+                    return np.add(possible_next_state, [0, -1, 0])
+
+                if not ore_is_solid(ore):
+                    # print("predicting flat movement")
                     return possible_next_state
+
+                # print("predicting a move up, ore is", ore)
+                return np.add(possible_next_state, [0, 1, 0])
 
             return state
 
