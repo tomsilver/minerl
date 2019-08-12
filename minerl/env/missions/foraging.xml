@@ -39,9 +39,6 @@
     <AgentSection mode="Survival">
         <Name>MineRLAgent</Name>
         <AgentStart>
-            <Inventory>
-                    <InventoryObject slot="0" type="compass" quantity="1"/>
-            </Inventory>
         </AgentStart>
         <AgentHandlers>
             <VideoProducer want_depth="false" viewpoint="$(VIEWPOINT)">
