@@ -3,7 +3,7 @@ from simple_agent_wrappers import AlwaysJumpingAgent, SafeAgentWrapper
 from random_agent import RandomAgent
 from sequential_agent import SequentialAgent
 from fsm_agent import DoneTimer, FSMAgent
-from dfs_agent import DFSAgent
+from search_agent import SearchAgent
 from minerl.env.wrappers import GridWorldWrapper, VideoWrapper
 from utils import run_single_episode, fill_in_xml
 from algorithms import Planner
@@ -311,7 +311,7 @@ def fsm_maze_test():
 
     run_single_episode(env, agent)
 
-def pure_dfs_test():
+def pure_search_test():
     maze2d = np.array([
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -352,57 +352,54 @@ def pure_dfs_test():
     out = planner.plan(init_state, goal)
     print("Plan:", out.plan)
 
+def search_maze_test():
+    seed = 1
+    np.random.seed(seed)
+    random.seed(seed)
 
+    grid_mins = (-1, -1, -1)
+    grid_maxs = (1, 1, 1)
+    viewpoint = 1
+    max_episode_steps = 20
 
+    env = gym.make('MineRLMazeTest-v0')
+    env = VideoWrapper(env, 'imgs/inner_fsm_maze_test.mp4', fps=30)
+    env = GridWorldWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
+    env = TimeLimit(env, max_episode_steps)
+    env = VideoWrapper(env, 'imgs/fsm_maze_test.gif', fps=30)
 
-# def dfs_maze_test():
-#     seed = 1
-#     np.random.seed(seed)
-#     random.seed(seed)
+    env.unwrapped.xml_file = fill_in_xml(env.xml_file, {
+        'GRID_MIN_X' : grid_mins[2],
+        'GRID_MIN_Y' : grid_mins[1],
+        'GRID_MIN_Z' : grid_mins[0],
+        'GRID_MAX_X' : grid_maxs[2],
+        'GRID_MAX_Y' : grid_maxs[1],
+        'GRID_MAX_Z' : grid_maxs[0],
+        'VIEWPOINT' : viewpoint,
+    })
 
-#     grid_mins = (-1, -1, -1)
-#     grid_maxs = (1, -1, 1)
-#     viewpoint = 1
-#     max_episode_steps = 20
+    env.seed(seed)
 
-#     env = gym.make('MineRLMazeTest-v0')
-#     env = VideoWrapper(env, 'imgs/inner_fsm_maze_test.mp4', fps=30)
-#     env = GridWorldWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
-#     env = TimeLimit(env, max_episode_steps)
-#     env = VideoWrapper(env, 'imgs/fsm_maze_test.gif', fps=30)
+    action_strs = ['right', 'right', 'right', 'right', 'forward', 'forward', 'forward', 
+                    'left', 'left', 'left', 'left']
+    action_sequence = []
+    for action_str in action_strs:
+        action = env.action_space.no_op()
+        action[action_str] = 1
+        action_sequence.append(action)
+    final_action = env.action_space.no_op()
 
-#     env.unwrapped.xml_file = fill_in_xml(env.xml_file, {
-#         'GRID_MIN_X' : grid_mins[2],
-#         'GRID_MIN_Y' : grid_mins[1],
-#         'GRID_MIN_Z' : grid_mins[0],
-#         'GRID_MAX_X' : grid_maxs[2],
-#         'GRID_MAX_Y' : grid_maxs[1],
-#         'GRID_MAX_Z' : grid_maxs[0],
-#         'VIEWPOINT' : viewpoint,
-#     })
+    agent0 = SequentialAgent(env.action_space, action_sequence, final_action=final_action)
+    done0 = DoneTimer(len(action_sequence))
+    agent1 = SearchAgent(env.action_space)
+    done1 = lambda obs : False
+    agent = FSMAgent([(agent0, done0), (agent1, done1)])
+    agent = GridBuildingAgentWrapper(agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
 
-#     env.seed(seed)
+    agent1.set_goal((0, 2, 0))
+    agent1.subscribe_to_grid_agent(agent)
 
-#     action_strs = ['right', 'right', 'right', 'right', 'forward', 'forward', 'forward', 
-#                     'left', 'left', 'left', 'left']
-#     action_sequence = []
-#     for action_str in action_strs:
-#         action = env.action_space.no_op()
-#         action[action_str] = 1
-#         action_sequence.append(action)
-#     final_action = env.action_space.no_op()
-
-#     agent0 = SequentialAgent(env.action_space, action_sequence, final_action=final_action)
-#     done0 = DoneTimer(len(action_sequence))
-#     agent1 = DFSAgent()
-#     done1 = lambda obs : False
-#     agent = FSMAgent([(agent0, done0), (agent1, done1)])
-#     agent = GridBuildingAgentWrapper(agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
-
-#     agent1.set_goal((0, 3, 0))
-#     agent1.subscribe_to_grid_agent(agent)
-
-#     run_single_episode(env, agent)
+    run_single_episode(env, agent)
 
 if __name__ == "__main__":
     # grid_unit_test()
@@ -412,5 +409,5 @@ if __name__ == "__main__":
     # safety_unit_test3()
     # foraging_test()
     # fsm_maze_test()
-    pure_dfs_test()
-    # dfs_maze_test()
+    # pure_search_test()
+    search_maze_test()

@@ -61,6 +61,15 @@ class GridBuildingAgentWrapper(AgentWrapper):
         return AgentWrapper.observe(self, obs, reward, done, info)
 
     def finish_episode(self):
+        full_grid = self.build_full_grid()
+
+        for vertical_plane in range(full_grid.shape[1]):
+            draw_vertical_plane(full_grid[:, vertical_plane], 
+                'imgs/plane{}.png'.format(vertical_plane))
+
+        return AgentWrapper.finish_episode(self)
+
+    def build_full_grid(self):
         full_grid = np.full((self.max_z - self.min_z + 1, 
             self.max_y - self.min_y + 1, self.max_x - self.min_x + 1), 
             'unk', dtype='object')
@@ -70,11 +79,7 @@ class GridBuildingAgentWrapper(AgentWrapper):
 
         full_grid = np.rot90(full_grid, k=2, axes=(0, 2))
 
-        for vertical_plane in range(full_grid.shape[1]):
-            draw_vertical_plane(full_grid[:, vertical_plane], 
-                'imgs/plane{}.png'.format(vertical_plane))
-
-        return AgentWrapper.finish_episode(self)
+        return full_grid
 
 
 
