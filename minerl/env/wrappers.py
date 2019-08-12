@@ -3,7 +3,10 @@ from minerl.env import spaces
 import gym
 import numpy as np
 import imageio
+import logging
 
+class FailedToReachTarget(Exception):
+    pass
 
 
 class GridWorldWrapper(gym.Wrapper):
@@ -43,6 +46,11 @@ class GridWorldWrapper(gym.Wrapper):
 
             if np.sqrt(np.sum((self.position - target_position)**2)) < self.threshold:
                 return obs, reward, done, info
+
+        dtp = self.discretize_position(target_position)
+        dap = self.discretize_position(self.position)
+        if not (dtp[0] == dap[0] and dtp[2] == dap[2]):
+            logging.debug("Failed to reach discrete target. Running into wall?")
 
         return obs, reward, done, info
 

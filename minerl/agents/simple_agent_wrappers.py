@@ -48,3 +48,4 @@ class SafeAgentWrapper(AgentWrapper):
         z, y, x = np.array(obs['grid_arr'].shape, dtype=int) // 2
 
         return (z + dz, y, x + dx)
+
