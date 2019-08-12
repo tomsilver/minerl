@@ -598,6 +598,41 @@ def bumpy_room_test(agent_type='exploring'):
 
     run_single_episode(env, final_agent)
 
+def forage_explore():
+    seed = 1
+    np.random.seed(seed)
+    random.seed(seed)
+
+    grid_mins = (-2, -2, -2)
+    grid_maxs = (2, 2, 2)
+    viewpoint = 1
+    max_episode_steps = 250
+
+    env = gym.make('MineRLForaging-v0')
+    env = VideoWrapper(env, 'imgs/inner_forage_explore_test.mp4', fps=30)
+    env = GridWorldWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
+    env = TimeLimit(env, max_episode_steps)
+    env = VideoWrapper(env, 'imgs/forage_explore_test.gif', fps=30)
+
+    env.unwrapped.xml_file = fill_in_xml(env.xml_file, {
+        'GRID_MIN_X' : grid_mins[2],
+        'GRID_MIN_Y' : grid_mins[1],
+        'GRID_MIN_Z' : grid_mins[0],
+        'GRID_MAX_X' : grid_maxs[2],
+        'GRID_MAX_Y' : grid_maxs[1],
+        'GRID_MAX_Z' : grid_maxs[0],
+        'VIEWPOINT' : viewpoint,
+    })
+
+    env.seed(seed)
+
+    search_agent = ExploringSearchAgent(env.action_space)
+    search_agent = AlwaysJumpingAgent(search_agent)
+    agent = GridBuildingAgentWrapper(search_agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
+    search_agent.subscribe_to_grid_agent(agent)
+
+    run_single_episode(env, agent)
+
 
 if __name__ == "__main__":
     # grid_unit_test()
@@ -611,4 +646,5 @@ if __name__ == "__main__":
     # search_maze_test()
     # search_ascending_maze_test()
     # open_room_test(agent_type='exploring')
-    bumpy_room_test(agent_type='exploring')
+    # bumpy_room_test(agent_type='exploring')
+    forage_explore()

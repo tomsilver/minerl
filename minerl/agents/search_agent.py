@@ -65,7 +65,6 @@ class ExploringSearchAgent(SearchAgent):
 
     def goal_check(self, state, goal):
         if tuple(state) not in self.grid_agent.pos_to_ore:
-            print("Found goal", goal)
             return True
         return False
 
