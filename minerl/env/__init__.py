@@ -498,6 +498,7 @@ contributed_env_infos = [
     ('MineRLSafetyUnitTest3-v0', 'safety_unit_test3.xml'),
     ('MineRLMazeTest-v0', 'maze_test.xml'),
     ('MineRLAscendingMazeTest-v0', 'ascending_maze_test.xml'),
+    ('MineRLOpenRoomTest-v0', 'open_room_test.xml'),
 ]
 
 for env_id, xml in contributed_env_infos:

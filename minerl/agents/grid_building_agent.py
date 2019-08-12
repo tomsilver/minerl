@@ -3,6 +3,7 @@ from agent import AgentWrapper
 import numpy as np
 import imageio
 import matplotlib.pyplot as plt
+import os
 
 
 
@@ -61,26 +62,32 @@ class GridBuildingAgentWrapper(AgentWrapper):
         return AgentWrapper.observe(self, obs, reward, done, info)
 
     def finish_episode(self):
-        full_grid = self.build_full_grid()
-
-        for vertical_plane in range(full_grid.shape[1]):
-            draw_vertical_plane(full_grid[:, vertical_plane], 
-                'imgs/plane{}.png'.format(vertical_plane))
-
+        self.draw_grid_images()
         return AgentWrapper.finish_episode(self)
 
-    def build_full_grid(self):
-        full_grid = np.full((self.max_z - self.min_z + 1, 
-            self.max_y - self.min_y + 1, self.max_x - self.min_x + 1), 
+    def build_full_grid(self, max_bounds=None):
+        if max_bounds is None:
+            min_x, max_x, min_y, max_y, min_z, max_z = \
+                self.min_x, self.max_x, self.min_y, self.max_y, self.min_z, self.max_z
+        else:
+            min_x, max_x, min_y, max_y, min_z, max_z = max_bounds
+
+        full_grid = np.full((max_z - min_z + 1, max_y - min_y + 1, max_x - min_x + 1), 
             'unk', dtype='object')
 
         for (x, y, z), ore in self.pos_to_ore.items():
-            full_grid[z - self.min_z, y - self.min_y, x - self.min_x] = ore
+            full_grid[z - min_z, y - min_y, x - min_x] = ore
 
         full_grid = np.rot90(full_grid, k=2, axes=(0, 2))
 
         return full_grid
 
+    def draw_grid_images(self, outdir='imgs', max_bounds=None):
+        full_grid = self.build_full_grid(max_bounds=max_bounds)
+
+        for vertical_plane in range(full_grid.shape[1]):
+            draw_vertical_plane(full_grid[:, vertical_plane], 
+                os.path.join(outdir, 'plane{}.png'.format(vertical_plane)))
 
 
 colors = {'leaves': (50, 200, 50), 'dirt': (210, 105, 30), 'stone': (100, 100, 100), 'grass': (0, 255, 0), 'unk': (0, 0, 0), 'air': (255, 255, 255), 'tallgrass': (100, 250, 100), 'brown_mushroom': (128, 0, 128), 'double_plant': (123, 200, 75), 'log': (200, 160, 20), 'log2' : (210, 140, 20), 'deadbush': (100, 80, 10), 'water' : (0,0,255), 'sand' : (210,180,140), 'gravel' : (40,40,40), 'clay' : (46,52,60), 'yellow_flower' : (255, 255, 0), 'red_flower' : (255, 0, 0), 'diamond_block' : (185, 242, 255), 'glass' : (255, 185, 242), 'lava' : (207, 16, 32), 'coal_ore'  : (44,44,44), 'cobblestone' : (130,130,130), 'snow_layer' : (240,240,240)}

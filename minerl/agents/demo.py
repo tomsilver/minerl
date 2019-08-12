@@ -1,5 +1,5 @@
 from grid_building_agent import GridBuildingAgentWrapper
-from simple_agent_wrappers import AlwaysJumpingAgent, SafeAgentWrapper
+from simple_agent_wrappers import AlwaysJumpingAgent, SafeAgentWrapper, AgentObsWrapper
 from random_agent import RandomAgent
 from sequential_agent import SequentialAgent
 from fsm_agent import DoneTimer, FSMAgent
@@ -14,6 +14,9 @@ import gym
 import minerl
 import numpy as np
 import random
+import os
+import itertools
+import imageio
 import logging
 import coloredlogs
 coloredlogs.install(logging.INFO)
@@ -463,6 +466,73 @@ def search_ascending_maze_test():
 
     run_single_episode(env, agent)
 
+
+def open_room_test():
+    seed = 1
+    np.random.seed(seed)
+    random.seed(seed)
+
+    grid_mins = (-1, -1, -1)
+    grid_maxs = (1, 1, 1)
+    viewpoint = 1
+    max_episode_steps = 50
+
+    env = gym.make('MineRLOpenRoomTest-v0')
+    env = GridWorldWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
+    env = TimeLimit(env, max_episode_steps)
+    env = VideoWrapper(env, 'imgs/open_room_test.gif', fps=3)
+
+    env.unwrapped.xml_file = fill_in_xml(env.xml_file, {
+        'GRID_MIN_X' : grid_mins[2],
+        'GRID_MIN_Y' : grid_mins[1],
+        'GRID_MIN_Z' : grid_mins[0],
+        'GRID_MAX_X' : grid_maxs[2],
+        'GRID_MAX_Y' : grid_maxs[1],
+        'GRID_MAX_Z' : grid_maxs[0],
+        'VIEWPOINT' : viewpoint,
+    })
+
+    env.seed(seed)
+
+    agent = RandomAgent(env.action_space)
+    agent = GridBuildingAgentWrapper(agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
+
+    # agent0 = SequentialAgent(env.action_space, action_sequence, final_action=final_action)
+    # done0 = DoneTimer(len(action_sequence))
+    # agent1 = SearchAgent(env.action_space)
+    # done1 = lambda obs : False
+    # agent = FSMAgent([(agent0, done0), (agent1, done1)])
+    # agent = AlwaysJumpingAgent(agent)
+    # agent = GridBuildingAgentWrapper(agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
+
+    # agent1.set_goal((0, 2, 0))
+    # agent1.subscribe_to_grid_agent(agent)
+
+    max_bounds = (-5, 5, 1, 3, -5, 5)
+
+    base_dir = 'imgs/random_agent'
+    time_counter = itertools.count()
+    filenames = []
+
+    def inner_fn(obs):
+        outdir = os.path.join(base_dir, '{}'.format(next(time_counter)))
+        filenames.append(os.path.join(outdir, 'plane1.png'))
+        if not os.path.exists(outdir):
+            os.makedirs(outdir)
+        agent.draw_grid_images(outdir=outdir, max_bounds=max_bounds)
+
+    def finish_fn():
+        images = [imageio.imread(f) for f in filenames]
+        outfile = os.path.join(base_dir, 'out.gif')
+        imageio.mimsave(outfile, images, fps=3)
+        print("Wrote out video to {}.".format(outfile))
+
+    final_agent = AgentObsWrapper(agent, inner_fn, finish_fn)
+
+    run_single_episode(env, final_agent)
+
+
+
 if __name__ == "__main__":
     # grid_unit_test()
     # stairs_unit_test()
@@ -473,4 +543,5 @@ if __name__ == "__main__":
     # fsm_maze_test()
     # pure_search_test()
     # search_maze_test()
-    search_ascending_maze_test()
+    # search_ascending_maze_test()
+    open_room_test()

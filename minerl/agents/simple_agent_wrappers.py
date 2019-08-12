@@ -11,6 +11,25 @@ class AlwaysJumpingAgent(AgentWrapper):
         return action
 
 
+class AgentObsWrapper(AgentWrapper):
+    def __init__(self, agent, inner_fn, finish_fn=None):
+        super().__init__(agent)
+        self.inner_fn = inner_fn
+        self.finish_fn = finish_fn
+
+    def reset(self, obs):
+        super().reset(obs)
+        self.inner_fn(obs)
+
+    def observe(self, obs, reward, done, debug_info):
+        super().observe(obs, reward, done, debug_info)
+        self.inner_fn(obs)
+
+    def finish_episode(self):
+        super().finish_episode()
+        if self.finish_fn:
+            self.finish_fn()
+
 
 class SafeAgentWrapper(AgentWrapper):
     dangerous_ores = ['lava']
