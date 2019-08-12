@@ -3,7 +3,7 @@ from simple_agent_wrappers import AlwaysJumpingAgent, SafeAgentWrapper, AgentObs
 from random_agent import RandomAgent
 from sequential_agent import SequentialAgent
 from fsm_agent import DoneTimer, FSMAgent
-from search_agent import SearchAgent
+from search_agent import SearchAgent, ExploringSearchAgent
 from minerl.env.wrappers import GridWorldWrapper, VideoWrapper
 from utils import run_single_episode, fill_in_xml
 from algorithms import Planner
@@ -467,7 +467,7 @@ def search_ascending_maze_test():
     run_single_episode(env, agent)
 
 
-def open_room_test():
+def open_room_test(agent_type='exploring'):
     seed = 1
     np.random.seed(seed)
     random.seed(seed)
@@ -494,25 +494,24 @@ def open_room_test():
 
     env.seed(seed)
 
-    agent = RandomAgent(env.action_space)
-    agent = GridBuildingAgentWrapper(agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
+    if agent_type == 'random':
+        base_dir = 'imgs/random_agent'
+        agent = RandomAgent(env.action_space)
+        agent = GridBuildingAgentWrapper(agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
+    
+    elif agent_type == 'exploring':
+        base_dir = 'imgs/exploring_search_agent'
+        search_agent = ExploringSearchAgent(env.action_space)
+        agent = GridBuildingAgentWrapper(search_agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
+        search_agent.subscribe_to_grid_agent(agent)
 
-    # agent0 = SequentialAgent(env.action_space, action_sequence, final_action=final_action)
-    # done0 = DoneTimer(len(action_sequence))
-    # agent1 = SearchAgent(env.action_space)
-    # done1 = lambda obs : False
-    # agent = FSMAgent([(agent0, done0), (agent1, done1)])
-    # agent = AlwaysJumpingAgent(agent)
-    # agent = GridBuildingAgentWrapper(agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
+    else:
+        raise NotImplementedError()
 
-    # agent1.set_goal((0, 2, 0))
-    # agent1.subscribe_to_grid_agent(agent)
-
-    max_bounds = (-5, 5, 1, 3, -5, 5)
-
-    base_dir = 'imgs/random_agent'
     time_counter = itertools.count()
     filenames = []
+
+    max_bounds = (-5, 5, 1, 3, -5, 5)
 
     def inner_fn(obs):
         outdir = os.path.join(base_dir, '{}'.format(next(time_counter)))
@@ -544,4 +543,4 @@ if __name__ == "__main__":
     # pure_search_test()
     # search_maze_test()
     # search_ascending_maze_test()
-    open_room_test()
+    open_room_test(agent_type='exploring')

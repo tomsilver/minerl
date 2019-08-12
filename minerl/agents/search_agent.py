@@ -25,9 +25,6 @@ class SearchAgent(Agent):
 
             return state
 
-        def goal_check(state, goal):
-            return np.all(state == goal)
-
         def heuristic(state):
             return 0
 
@@ -36,7 +33,7 @@ class SearchAgent(Agent):
 
         # import pdb; pdb.set_trace()
 
-        planner = Planner(model, action_list, goal_check, heuristic)
+        planner = Planner(model, action_list, self.goal_check, heuristic)
         out = planner.plan(init_state, goal)
 
         # import pdb; pdb.set_trace()
@@ -46,8 +43,29 @@ class SearchAgent(Agent):
         action[action_str] = 1
         return action
 
+    def goal_check(self, state, goal):
+        return np.all(state == goal)
+
     def set_goal(self, goal):
         self.goal = np.array(goal)
 
     def subscribe_to_grid_agent(self, grid_agent):
         self.grid_agent = grid_agent
+
+
+class ExploringSearchAgent(SearchAgent):
+    def reset(self, obs):
+        self.visited_positions = { tuple(obs['position']) }
+        self.goal = None
+        return super().reset(obs)
+
+    def goal_check(self, state, goal):
+        if tuple(state) not in self.visited_positions:
+            print("Found goal", goal)
+            return True
+        return False
+
+    def __call__(self, obs):
+        self.visited_positions.add(tuple(obs['position']))
+        return super().__call__(obs)
+
