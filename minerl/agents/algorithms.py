@@ -5,12 +5,12 @@ import heapq as hq
 class Planner(object):
     """A* planner.
     """
-    def __init__(self, model, action_list, goal_check, heuristic):
+    def __init__(self, model, action_list, goal_check, heuristic, seed=0):
         self.model = model
         self.action_list = action_list
         self.goal_check = goal_check
         self.heuristic = heuristic
-        self.rng = np.random.RandomState(0)
+        self.rng = np.random.RandomState(seed)
 
     def plan(self, init_state, goal):
         """A* search. Returns a PlannerOutput object.
@@ -25,6 +25,7 @@ class Planner(object):
         hq.heappush(pqueue, (self.heuristic(init_state), 0., root))
         while len(pqueue) > 0:
             _, _, entry = hq.heappop(pqueue)
+            # print("popped", entry.state, entry.action_sequence)
             if self.goal_check(entry.state, goal):
                 entry.state_sequence.append(entry.state)
                 cost_to_go = (entry.cost_sequence[-1]-np.array(entry.cost_sequence))
@@ -37,6 +38,7 @@ class Planner(object):
                 for action in self.action_list:
                     cost = self._action_cost(action)
                     next_state = self.model(entry.state, action)
+                    # print("adding to heap:", next_state, action)
                     new_entry = SearchTreeEntry(
                         next_state,
                         entry.state_sequence+[entry.state],

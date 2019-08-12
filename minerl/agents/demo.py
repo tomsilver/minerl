@@ -633,83 +633,94 @@ def forage_explore():
 
     search_agent = ExploringSearchAgent(env.action_space)
     search_agent = AlwaysJumpingAgent(search_agent)
+    search_agent = SafeAgentWrapper(search_agent)
     agent = GridBuildingAgentWrapper(search_agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
     search_agent.subscribe_to_grid_agent(agent)
 
     run_single_episode(env, agent)
 
 def visualize_3d_test():
-    # seed = 2
-    # np.random.seed(seed)
-    # random.seed(seed)
+    seed = 2
+    np.random.seed(seed)
+    random.seed(seed)
 
-    # grid_mins = (-2, -2, -2)
-    # grid_maxs = (2, 2, 2)
-    # viewpoint = 1
-    # max_episode_steps = 250
+    grid_mins = (-2, -2, -2)
+    grid_maxs = (2, 2, 2)
+    viewpoint = 1
+    max_episode_steps = 250
 
-    # env = gym.make('MineRLForaging-v0')
-    # env = VideoWrapper(env, 'imgs/inner_foraging_test.mp4', fps=30)
-    # env = GridWorldWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
-    # env = TimeLimit(env, max_episode_steps)
-    # env = VideoWrapper(env, 'imgs/foraging_test.gif', fps=30)
+    env = gym.make('MineRLForaging-v0')
+    env = VideoWrapper(env, 'imgs/inner_foraging_test.mp4', fps=30)
+    env = GridWorldWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
+    env = TimeLimit(env, max_episode_steps)
+    env = VideoWrapper(env, 'imgs/foraging_test.gif', fps=30)
 
-    # env.unwrapped.xml_file = fill_in_xml(env.xml_file, {
-    #     'GRID_MIN_X' : grid_mins[2],
-    #     'GRID_MIN_Y' : grid_mins[1],
-    #     'GRID_MIN_Z' : grid_mins[0],
-    #     'GRID_MAX_X' : grid_maxs[2],
-    #     'GRID_MAX_Y' : grid_maxs[1],
-    #     'GRID_MAX_Z' : grid_maxs[0],
-    #     'VIEWPOINT' : viewpoint,
-    # })
+    env.unwrapped.xml_file = fill_in_xml(env.xml_file, {
+        'GRID_MIN_X' : grid_mins[2],
+        'GRID_MIN_Y' : grid_mins[1],
+        'GRID_MIN_Z' : grid_mins[0],
+        'GRID_MAX_X' : grid_maxs[2],
+        'GRID_MAX_Y' : grid_maxs[1],
+        'GRID_MAX_Z' : grid_maxs[0],
+        'VIEWPOINT' : viewpoint,
+    })
 
-    # env.seed(seed)
+    env.seed(seed)
 
-    # agent = RandomAgent(env.action_space)
-    # agent = AlwaysJumpingAgent(agent)
-    # agent = SafeAgentWrapper(agent)
-    # agent = GridBuildingAgentWrapper(agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
+    search_agent = ExploringSearchAgent(env.action_space)
+    search_agent = AlwaysJumpingAgent(search_agent)
+    search_agent = SafeAgentWrapper(search_agent)
+    agent = GridBuildingAgentWrapper(search_agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
+    search_agent.subscribe_to_grid_agent(agent)
 
-    # run_single_episode(env, agent)
+    run_single_episode(env, agent)
 
-    # with open('random_pos_to_ore.pkl', 'wb') as f:
-    #     pickle.dump(agent.pos_to_ore, f)
+    with open('explore_pos_to_ore.pkl', 'wb') as f:
+        pickle.dump(agent.pos_to_ore, f)
 
-    with open('random_pos_to_ore.pkl', 'rb') as f:
-        pos_to_ore = pickle.load(f)
+    # with open('explore_pos_to_ore.pkl', 'rb') as f:
+    #     pos_to_ore = pickle.load(f)
 
-    full_grid = build_full_grid(pos_to_ore)
-    full_grid = np.swapaxes(full_grid, 1, 2)
+    # full_grid = build_full_grid(pos_to_ore)
+    # full_grid = np.swapaxes(full_grid, 1, 2)
 
-    colors = np.moveaxis(np.vectorize(grid_colors.get)(full_grid), 0, -1)
-    colors = colors.astype(np.float32) / 255.
-    voxels = (full_grid != 'unk') & (full_grid != 'air')
+    # colors = np.moveaxis(np.vectorize(grid_colors.get)(full_grid), 0, -1)
+    # colors = colors.astype(np.float32) / 255.
+    # voxels = (full_grid != 'unk') & (full_grid != 'air')
 
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
-    ax.voxels(voxels, facecolors=colors, edgecolor='k')
-    ax.axis('off')
+    # fig = plt.figure()
+    # ax = fig.gca(projection='3d')
+    # ax.voxels(voxels, facecolors=colors, edgecolor='k')
+    # ax.axis('off')
 
-    base_dir = 'imgs/visualize_3d'
-    if not os.path.exists(base_dir):
-        os.makedirs(base_dir)
 
-    angles = np.linspace([0., 0.], [30., 30.], num=20).tolist()
-    angles += np.linspace([30., 30.], [30., 360.], num=60).tolist()
+    # max_range = np.array([voxels.shape]).max() / 2.0
+    # mid_x = (voxels.shape[0]) * 0.5
+    # mid_y = (voxels.shape[1]) * 0.5
+    # mid_z = (voxels.shape[2]) * 0.5
+    # ax.set_xlim(mid_x - max_range, mid_x + max_range)
+    # ax.set_ylim(mid_y - max_range, mid_y + max_range)
+    # ax.set_zlim(mid_z - max_range, mid_z + max_range)
 
-    filenames = []
+    # base_dir = 'imgs/visualize_3d'
+    # if not os.path.exists(base_dir):
+    #     os.makedirs(base_dir)
 
-    for i, (elev, azim) in enumerate(angles):
-        ax.view_init(elev=elev, azim=azim)
-        filename = os.path.join(base_dir, "view%d.png" % i)
-        plt.savefig(filename)
-        filenames.append(filename)
+    # angles = np.linspace([0., 0.], [30., 30.], num=20).tolist()
+    # angles += np.linspace([30., 30.], [30., 360.], num=60).tolist()
 
-    images = [imageio.imread(f) for f in filenames]
-    outfile = os.path.join(base_dir, 'out.gif')
-    imageio.mimsave(outfile, images, fps=5)
-    print("Wrote out video to {}.".format(outfile))
+    # filenames = []
+
+    # for i, (elev, azim) in enumerate(angles):
+    #     ax.view_init(elev=elev, azim=azim)
+    #     filename = os.path.join(base_dir, "view%d.png" % i)
+    #     plt.savefig(filename)
+    #     filenames.append(filename)
+
+    # images = [imageio.imread(f) for f in filenames]
+    # outfile = os.path.join(base_dir, 'out.gif')
+    # imageio.mimsave(outfile, images, fps=5)
+    # print("Wrote out video to {}.".format(outfile))
 
 
 

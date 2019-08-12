@@ -6,6 +6,8 @@ import numpy as np
 
 class SearchAgent(Agent):
 
+    rng = np.random.RandomState(0)
+
     def __call__(self, obs):
         pos_to_ore = self.grid_agent.pos_to_ore
         action_list = ['forward', 'back', 'left', 'right']
@@ -37,7 +39,8 @@ class SearchAgent(Agent):
 
         # import pdb; pdb.set_trace()
 
-        planner = Planner(model, action_list, self.goal_check, heuristic)
+        seed = self.rng.randint(100000)
+        planner = Planner(model, action_list, self.goal_check, heuristic, seed=seed)
 
         try:
             out = planner.plan(init_state, goal)
