@@ -1,5 +1,6 @@
 from agent import Agent
 from algorithms import Planner
+from simple_agent_wrappers import SafeAgentWrapper
 
 import numpy as np
 
@@ -23,10 +24,31 @@ class SearchAgent(Agent):
                 possible_next_state = np.add(state, action_effect)
 
                 if tuple(possible_next_state) in pos_to_ore:
-                    if pos_to_ore[tuple(possible_next_state)] == 'air':
-                        return possible_next_state
+                    ore = pos_to_ore[tuple(possible_next_state)]
+                else:
                     continue
-                elif action_effect[1] == 0:
+
+                if tuple(possible_next_state + [0, 2, 0]) in pos_to_ore:
+                    above_above_ore = pos_to_ore[tuple(possible_next_state + [0, 2, 0])]
+                else:
+                    above_above_ore = None
+
+                if tuple(possible_next_state + [0, 1, 0]) in pos_to_ore:
+                    above_ore = pos_to_ore[tuple(possible_next_state + [0, 1, 0])]
+                else:
+                    above_ore = None
+
+                if tuple(possible_next_state + [0, -1, 0]) in pos_to_ore:
+                    below_ore = pos_to_ore[tuple(possible_next_state + [0, -1, 0])]
+                else:
+                    below_ore = None
+
+                if tuple(possible_next_state + [0, -2, 0]) in pos_to_ore:
+                    below_below_ore = pos_to_ore[tuple(possible_next_state + [0, -2, 0])]
+                else:
+                    below_below_ore = None
+
+                if SafeAgentWrapper.is_safe(above_above_ore, above_ore, ore, below_ore, below_below_ore):
                     return possible_next_state
 
             return state
@@ -68,7 +90,13 @@ class ExploringSearchAgent(SearchAgent):
 
     def goal_check(self, state, goal):
         if tuple(state) not in self.grid_agent.pos_to_ore:
-            return True
+            return False
+
+        for action_effect in [(0, 0, 1), (0, 0, -1), (1, 0, 0), (-1, 0, 0)]:
+            possible_next_state = np.add(state, action_effect)
+            if tuple(possible_next_state) not in self.grid_agent.pos_to_ore:
+                return True
+
         return False
 
 

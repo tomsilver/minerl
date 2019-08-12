@@ -32,6 +32,7 @@ class Planner(object):
                 cost_to_go_pred = [self.heuristic(s) for s in entry.state_sequence]
                 if any(cost_to_go_pred > cost_to_go):
                     raise Exception("Heuristic is not admissible")
+                # print("goal reached", entry.state, entry.action_sequence)
                 return PlannerOutput(entry.action_sequence, entry.cost, entry.state_sequence)
             if not self._in_set(entry.state, visited):
                 self._add_to_set(entry.state, visited)

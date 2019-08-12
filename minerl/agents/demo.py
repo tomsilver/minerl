@@ -640,7 +640,7 @@ def forage_explore():
     run_single_episode(env, agent)
 
 def visualize_3d_test():
-    seed = 2
+    seed = 1
     np.random.seed(seed)
     random.seed(seed)
 
@@ -669,14 +669,17 @@ def visualize_3d_test():
 
     search_agent = ExploringSearchAgent(env.action_space)
     search_agent = AlwaysJumpingAgent(search_agent)
+    search_agent = SafeAgentWrapper(search_agent)
     agent = GridBuildingAgentWrapper(search_agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
-    agent = SafeAgentWrapper(agent)
     search_agent.subscribe_to_grid_agent(agent)
 
-    run_single_episode(env, agent)
+    def finish_fn():
+        with open('explore_pos_to_ore.pkl', 'wb') as f:
+            pickle.dump(agent.pos_to_ore, f)
 
-    with open('explore_pos_to_ore.pkl', 'wb') as f:
-        pickle.dump(agent.pos_to_ore, f)
+    final_agent = AgentObsWrapper(agent, lambda x : True, finish_fn)
+
+    run_single_episode(env, final_agent)
 
     # with open('explore_pos_to_ore.pkl', 'rb') as f:
     #     pos_to_ore = pickle.load(f)
@@ -690,9 +693,8 @@ def visualize_3d_test():
 
     # fig = plt.figure()
     # ax = fig.gca(projection='3d')
-    # ax.voxels(voxels, facecolors=colors, edgecolor='k')
+    # ax.voxels(voxels, facecolors=colors) #, edgecolor='k')
     # ax.axis('off')
-
 
     # max_range = np.array([voxels.shape]).max() / 2.0
     # mid_x = (voxels.shape[0]) * 0.5

@@ -32,33 +32,44 @@ class AgentObsWrapper(AgentWrapper):
 
 
 class SafeAgentWrapper(AgentWrapper):
-    dangerous_ores = ['lava', 'water']
-    falling_ores = ['water', 'air']
 
     def __call__(self, obs):
         action = AgentWrapper.__call__(self, obs)
         next_rel_pos = self.get_next_rel_pos(action, obs)
 
+        above_above_ore = obs['grid_arr'][next_rel_pos[0], next_rel_pos[1] + 2, next_rel_pos[2]]
+        above_ore = obs['grid_arr'][next_rel_pos[0], next_rel_pos[1] + 1, next_rel_pos[2]]
+
         # Dangerous ore in front?
         next_ore = obs['grid_arr'][next_rel_pos[0], next_rel_pos[1], next_rel_pos[2]]
-
-        if next_ore in self.dangerous_ores:
-            return self.action_space.no_op()
 
         # Dangerous ore below?
         next_ore_below = obs['grid_arr'][next_rel_pos[0], next_rel_pos[1] - 1, next_rel_pos[2]]
 
-        if next_ore_below in self.dangerous_ores:
-            return self.action_space.no_op()
-
         # Falling into water or air?
         next_ore_below_below = obs['grid_arr'][next_rel_pos[0], next_rel_pos[1] - 2, next_rel_pos[2]]
 
-        if next_ore_below_below in self.falling_ores:
-            return self.action_space.no_op()
+        if SafeAgentWrapper.is_safe(above_above_ore, above_ore, next_ore, next_ore_below, next_ore_below_below):
+            return action
+        
+        return self.action_space.no_op()
 
-        # Good to go
-        return action
+    @staticmethod
+    def is_safe(above_above_ore, above_ore, ore, below_ore, below_below_ore):
+        if above_above_ore != 'air':
+            return False
+
+        if ore in ['lava', 'water']:
+            return False
+
+        if below_ore in ['lava', 'water']:
+            return False
+
+        if below_ore in ['water', 'air'] and below_below_ore in ['water', 'air']:
+            return False
+
+        return True
+
 
     def get_next_rel_pos(self, action, obs):
         dz = action['back'] - action['forward']
