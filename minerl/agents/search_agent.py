@@ -20,7 +20,11 @@ class SearchAgent(Agent):
             for action_effect in action_effects[action_list.index(action)]:
                 possible_next_state = np.add(state, action_effect)
 
-                if tuple(possible_next_state) in pos_to_ore and pos_to_ore[tuple(possible_next_state)] == 'air':
+                if tuple(possible_next_state) in pos_to_ore:
+                    if pos_to_ore[tuple(possible_next_state)] == 'air':
+                        return possible_next_state
+                    continue
+                elif action_effect[1] == 0:
                     return possible_next_state
 
             return state
@@ -34,14 +38,17 @@ class SearchAgent(Agent):
         # import pdb; pdb.set_trace()
 
         planner = Planner(model, action_list, self.goal_check, heuristic)
-        out = planner.plan(init_state, goal)
 
-        # import pdb; pdb.set_trace()
+        try:
+            out = planner.plan(init_state, goal)
+            action_str = out.plan[0]
+            action = self.action_space.no_op()
+            action[action_str] = 1
+            return action
+        except:
+            print("Warning: planning problem, returning noop.")
 
-        action_str = out.plan[0]
-        action = self.action_space.no_op()
-        action[action_str] = 1
-        return action
+        return self.action_space.no_op()
 
     def goal_check(self, state, goal):
         return np.all(state == goal)
@@ -54,18 +61,12 @@ class SearchAgent(Agent):
 
 
 class ExploringSearchAgent(SearchAgent):
-    def reset(self, obs):
-        self.visited_positions = { tuple(obs['position']) }
-        self.goal = None
-        return super().reset(obs)
+    goal = None
 
     def goal_check(self, state, goal):
-        if tuple(state) not in self.visited_positions:
+        if tuple(state) not in self.grid_agent.pos_to_ore:
             print("Found goal", goal)
             return True
         return False
 
-    def __call__(self, obs):
-        self.visited_positions.add(tuple(obs['position']))
-        return super().__call__(obs)
 
