@@ -639,19 +639,20 @@ def forage_explore():
     run_single_episode(env, agent)
 
 def visualize_3d_test():
-    # seed = 1
+    # seed = 2
     # np.random.seed(seed)
     # random.seed(seed)
 
-    # grid_mins = (-1, -1, -1)
-    # grid_maxs = (1, 1, 1)
+    # grid_mins = (-2, -2, -2)
+    # grid_maxs = (2, 2, 2)
     # viewpoint = 1
-    # max_episode_steps = 50
+    # max_episode_steps = 250
 
-    # env = gym.make('MineRLBumpyRoomTest-v0')
+    # env = gym.make('MineRLForaging-v0')
+    # env = VideoWrapper(env, 'imgs/inner_foraging_test.mp4', fps=30)
     # env = GridWorldWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
     # env = TimeLimit(env, max_episode_steps)
-    # env = VideoWrapper(env, 'imgs/bumpy_room_test.gif', fps=3)
+    # env = VideoWrapper(env, 'imgs/foraging_test.gif', fps=30)
 
     # env.unwrapped.xml_file = fill_in_xml(env.xml_file, {
     #     'GRID_MIN_X' : grid_mins[2],
@@ -665,18 +666,17 @@ def visualize_3d_test():
 
     # env.seed(seed)
 
-    # base_dir = 'imgs/bumpy_room/exploring_search_agent'
-    # search_agent = ExploringSearchAgent(env.action_space)
-    # search_agent = AlwaysJumpingAgent(search_agent)
-    # agent = GridBuildingAgentWrapper(search_agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
-    # search_agent.subscribe_to_grid_agent(agent)
+    # agent = RandomAgent(env.action_space)
+    # agent = AlwaysJumpingAgent(agent)
+    # agent = SafeAgentWrapper(agent)
+    # agent = GridBuildingAgentWrapper(agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
 
     # run_single_episode(env, agent)
 
-    # with open('pos_to_ore.pkl', 'wb') as f:
+    # with open('random_pos_to_ore.pkl', 'wb') as f:
     #     pickle.dump(agent.pos_to_ore, f)
 
-    with open('pos_to_ore.pkl', 'rb') as f:
+    with open('random_pos_to_ore.pkl', 'rb') as f:
         pos_to_ore = pickle.load(f)
 
     full_grid = build_full_grid(pos_to_ore)
@@ -695,13 +695,23 @@ def visualize_3d_test():
     if not os.path.exists(base_dir):
         os.makedirs(base_dir)
 
-    # np.linspace([180., 270.], [100., 270], num=20)
     angles = np.linspace([0., 0.], [30., 30.], num=20).tolist()
-    angles += np.linspace([30., 30.], [30., 180.], num=20).tolist()
+    angles += np.linspace([30., 30.], [30., 360.], num=60).tolist()
+
+    filenames = []
 
     for i, (elev, azim) in enumerate(angles):
         ax.view_init(elev=elev, azim=azim)
-        plt.savefig(os.path.join(base_dir, "view%d.png" % i))
+        filename = os.path.join(base_dir, "view%d.png" % i)
+        plt.savefig(filename)
+        filenames.append(filename)
+
+    images = [imageio.imread(f) for f in filenames]
+    outfile = os.path.join(base_dir, 'out.gif')
+    imageio.mimsave(outfile, images, fps=5)
+    print("Wrote out video to {}.".format(outfile))
+
+
 
 if __name__ == "__main__":
     # grid_unit_test()
