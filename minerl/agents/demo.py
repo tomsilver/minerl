@@ -1,4 +1,4 @@
-from grid_building_agent import GridBuildingAgentWrapper
+from grid_building_agent import GridBuildingAgentWrapper, build_full_grid, grid_colors
 from simple_agent_wrappers import AlwaysJumpingAgent, SafeAgentWrapper, AgentObsWrapper
 from random_agent import RandomAgent
 from sequential_agent import SequentialAgent
@@ -10,6 +10,7 @@ from algorithms import Planner
 
 from gym.wrappers import TimeLimit
 
+import matplotlib.pyplot as plt
 import gym
 import minerl
 import numpy as np
@@ -19,7 +20,11 @@ import itertools
 import imageio
 import logging
 import coloredlogs
+import pickle
 coloredlogs.install(logging.INFO)
+
+from mpl_toolkits.mplot3d import Axes3D
+
 
 def grid_unit_test():
     seed = 1
@@ -599,7 +604,7 @@ def bumpy_room_test(agent_type='exploring'):
     run_single_episode(env, final_agent)
 
 def forage_explore():
-    seed = 1
+    seed = 2
     np.random.seed(seed)
     random.seed(seed)
 
@@ -633,6 +638,70 @@ def forage_explore():
 
     run_single_episode(env, agent)
 
+def visualize_3d_test():
+    # seed = 1
+    # np.random.seed(seed)
+    # random.seed(seed)
+
+    # grid_mins = (-1, -1, -1)
+    # grid_maxs = (1, 1, 1)
+    # viewpoint = 1
+    # max_episode_steps = 50
+
+    # env = gym.make('MineRLBumpyRoomTest-v0')
+    # env = GridWorldWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
+    # env = TimeLimit(env, max_episode_steps)
+    # env = VideoWrapper(env, 'imgs/bumpy_room_test.gif', fps=3)
+
+    # env.unwrapped.xml_file = fill_in_xml(env.xml_file, {
+    #     'GRID_MIN_X' : grid_mins[2],
+    #     'GRID_MIN_Y' : grid_mins[1],
+    #     'GRID_MIN_Z' : grid_mins[0],
+    #     'GRID_MAX_X' : grid_maxs[2],
+    #     'GRID_MAX_Y' : grid_maxs[1],
+    #     'GRID_MAX_Z' : grid_maxs[0],
+    #     'VIEWPOINT' : viewpoint,
+    # })
+
+    # env.seed(seed)
+
+    # base_dir = 'imgs/bumpy_room/exploring_search_agent'
+    # search_agent = ExploringSearchAgent(env.action_space)
+    # search_agent = AlwaysJumpingAgent(search_agent)
+    # agent = GridBuildingAgentWrapper(search_agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
+    # search_agent.subscribe_to_grid_agent(agent)
+
+    # run_single_episode(env, agent)
+
+    # with open('pos_to_ore.pkl', 'wb') as f:
+    #     pickle.dump(agent.pos_to_ore, f)
+
+    with open('pos_to_ore.pkl', 'rb') as f:
+        pos_to_ore = pickle.load(f)
+
+    full_grid = build_full_grid(pos_to_ore)
+    full_grid = np.swapaxes(full_grid, 1, 2)
+
+    colors = np.moveaxis(np.vectorize(grid_colors.get)(full_grid), 0, -1)
+    colors = colors.astype(np.float32) / 255.
+    voxels = (full_grid != 'unk') & (full_grid != 'air')
+
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    ax.voxels(voxels, facecolors=colors, edgecolor='k')
+    ax.axis('off')
+
+    base_dir = 'imgs/visualize_3d'
+    if not os.path.exists(base_dir):
+        os.makedirs(base_dir)
+
+    # np.linspace([180., 270.], [100., 270], num=20)
+    angles = np.linspace([0., 0.], [30., 30.], num=20).tolist()
+    angles += np.linspace([30., 30.], [30., 180.], num=20).tolist()
+
+    for i, (elev, azim) in enumerate(angles):
+        ax.view_init(elev=elev, azim=azim)
+        plt.savefig(os.path.join(base_dir, "view%d.png" % i))
 
 if __name__ == "__main__":
     # grid_unit_test()
@@ -647,4 +716,6 @@ if __name__ == "__main__":
     # search_ascending_maze_test()
     # open_room_test(agent_type='exploring')
     # bumpy_room_test(agent_type='exploring')
-    forage_explore()
+    # forage_explore()
+    visualize_3d_test()
+
