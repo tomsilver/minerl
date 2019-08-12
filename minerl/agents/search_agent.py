@@ -9,13 +9,19 @@ class SearchAgent(Agent):
     def __call__(self, obs):
         pos_to_ore = self.grid_agent.pos_to_ore
         action_list = ['forward', 'back', 'left', 'right']
-        action_effects = [(0, 0, 1),  (0, 0, -1), (1, 0, 0), (-1, 0, 0)]
+        action_effects = [
+            [(0, -1, 1), (0, 0, 1), (0, 1, 1)],  
+            [(0, -1, -1), (0, 0, -1), (0, 1, -1)], 
+            [(1, -1, 0), (1, 0, 0), (1, 1, 0)], 
+            [(-1, -1, 0), (-1, 0, 0), (-1, 1, 0)],
+        ]
 
         def model(state, action):
-            possible_next_state = np.add(state, action_effects[action_list.index(action)])
+            for action_effect in action_effects[action_list.index(action)]:
+                possible_next_state = np.add(state, action_effect)
 
-            if tuple(possible_next_state) in pos_to_ore and pos_to_ore[tuple(possible_next_state)] == 'air':
-                return possible_next_state
+                if tuple(possible_next_state) in pos_to_ore and pos_to_ore[tuple(possible_next_state)] == 'air':
+                    return possible_next_state
 
             return state
 
