@@ -32,7 +32,7 @@ class AgentObsWrapper(AgentWrapper):
 
 
 class SafeAgentWrapper(AgentWrapper):
-    dangerous_ores = ['lava']
+    dangerous_ores = ['lava', 'water']
     falling_ores = ['water', 'air']
 
     def __call__(self, obs):

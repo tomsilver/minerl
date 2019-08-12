@@ -669,8 +669,8 @@ def visualize_3d_test():
 
     search_agent = ExploringSearchAgent(env.action_space)
     search_agent = AlwaysJumpingAgent(search_agent)
-    search_agent = SafeAgentWrapper(search_agent)
     agent = GridBuildingAgentWrapper(search_agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
+    agent = SafeAgentWrapper(agent)
     search_agent.subscribe_to_grid_agent(agent)
 
     run_single_episode(env, agent)
