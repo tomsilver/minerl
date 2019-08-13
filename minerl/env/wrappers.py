@@ -79,7 +79,8 @@ class GridWorldWrapper(gym.Wrapper):
 
         obs, reward, done, debug_info = self.step_to_target(target_position)
 
-        obs, reward, done, debug_info = self.finish_stepping()
+        if not done:
+            obs, reward, done, debug_info = self.finish_stepping()
 
         self.position = np.array([obs['XPos'], obs['YPos'], obs['ZPos']])
         obs['position'] = self.discretize_position(self.position)
@@ -128,6 +129,8 @@ class GridWorldWrapper(gym.Wrapper):
         # Always let settle b/c jumping observations are unreliable
         for _ in range(5):
             obs, reward, done, debug_info = self.step_in_env(self.env.action_space.no_op())
+            if done:
+                break
         return obs, reward, done, debug_info
 
     def get_action_towards_target(self, position, target_position):

@@ -45,7 +45,8 @@ class SearchAgent(Agent):
         except:
             print("Warning: planning problem, returning noop.")
 
-        return self.action_space.no_op()
+        # return self.action_space.no_op()
+        return self.action_space.sample()
 
     def goal_check(self, state, goal):
         return np.all(state == goal)

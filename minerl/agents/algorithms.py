@@ -49,7 +49,7 @@ class Planner(object):
                     
                     hq.heappush(pqueue, (entry.cost+cost+self.heuristic(next_state), self.rng.random(), new_entry))
 
-        import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
         raise Exception("No path found")
 
     @staticmethod

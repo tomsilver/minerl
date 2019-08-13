@@ -4,6 +4,7 @@ import numpy as np
 import imageio
 import matplotlib.pyplot as plt
 import os
+import scipy.ndimage
 
 
 
@@ -118,5 +119,6 @@ def draw_vertical_plane(grid, outfile):
                 grid_colors[ore] = rgb
             plane_img[r, c] = grid_colors[ore]
 
+    plane_img = scipy.ndimage.zoom(plane_img, (50, 50, 1), order=0)
     imageio.imsave(outfile, plane_img)
     print("Wrote out to {}.".format(outfile))

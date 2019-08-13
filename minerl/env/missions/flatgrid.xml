@@ -25,19 +25,23 @@
     </ServerSection>
     <AgentSection mode="Survival">
         <Name>MineRLAgent</Name>
-        <AgentStart />
-        <AgentHandlers>   
-          <VideoProducer want_depth="false">
-              <Width>64</Width>
-              <Height>64</Height>
-          </VideoProducer>
-          <ObservationFromFullStats />
-          <HumanLevelCommands>
-              <ModifierList type="deny-list"> 
-              <command>moveMouse</command> 
-              <command>inventory</command> 
-              </ModifierList>
-          </HumanLevelCommands>
+        <AgentStart>
+        </AgentStart>
+        <AgentHandlers>
+            <VideoProducer want_depth="false">
+                <Width>64</Width>
+                <Height>64</Height>
+            </VideoProducer>
+            <FileBasedPerformanceProducer/>
+            <ObservationFromFullStats/>
+            <ContinuousMovementCommands/>
+            <CameraCommands/>
+            <ObservationFromGrid>
+               <Grid name="grid">
+                  <min x="$(GRID_MIN_X)" y="$(GRID_MIN_Y)" z="$(GRID_MIN_Z)" />
+                  <max x="$(GRID_MAX_X)" y="$(GRID_MAX_Y)" z="$(GRID_MAX_Z)" />
+               </Grid>
+            </ObservationFromGrid>
         </AgentHandlers>  
     </AgentSection>
 </Mission>
