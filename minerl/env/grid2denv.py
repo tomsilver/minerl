@@ -61,7 +61,7 @@ class Grid2DEnv(gym.Env):
     def render(self, mode='human'):
         obs = np.array(self.layout, dtype=np.int64)
         obs[self.pos[0], self.pos[1]] = self.AGENT
-        obs = scipy.ndimage.zoom(obs, 50, order=0)
+        obs = scipy.ndimage.zoom(obs, 20, order=0)
 
         return obs
 

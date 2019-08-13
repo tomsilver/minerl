@@ -632,7 +632,7 @@ def bumpy_room_test(agent_type='exploring'):
     env = gym.make('MineRLBumpyRoomTest-v0')
     env = GridWorldWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
     env = TimeLimit(env, max_episode_steps)
-    env = VideoWrapper(env, 'imgs/bumpy_room_test.gif', fps=3)
+    env = VideoWrapper(env, 'imgs/bumpy_room_test_{}.gif'.format(agent_type), fps=3)
 
     env.unwrapped.xml_file = fill_in_xml(env.xml_file, {
         'GRID_MIN_X' : grid_mins[2],
@@ -646,48 +646,50 @@ def bumpy_room_test(agent_type='exploring'):
 
     env.seed(seed)
 
+    base_dir = 'imgs/{}_agent'.format(agent_type)
     if agent_type == 'random':
-        base_dir = 'imgs/bumpy_room/random_agent'
         agent = RandomAgent(env.action_space)
+        agent = AlwaysJumpingAgent(agent)
+        agent = GridBuildingAgentWrapper(agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
+
+    elif agent_type == 'roomba':
+        agent = RoombaAgent(env.action_space)
+        agent = AlwaysJumpingAgent(agent)
         agent = GridBuildingAgentWrapper(agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
     
     elif agent_type == 'exploring':
-        base_dir = 'imgs/bumpy_room/exploring_search_agent'
-        search_agent = ExploringSearchAgent(env.action_space)
-        search_agent = AlwaysJumpingAgent(search_agent)
-        agent = GridBuildingAgentWrapper(search_agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
+        agent = ExploringSearchAgent(env.action_space)
+        agent = AlwaysJumpingAgent(agent)
+        agent = GridBuildingAgentWrapper(agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
         # search_agent.subscribe_to_grid_agent(agent)
 
     else:
         raise NotImplementedError()
 
     time_counter = itertools.count()
-    planes = [1, 2, 3]
-    filenames = [[] for _ in planes]
+    filenames = []
 
     max_bounds = (-5, 5, 1, 6, -5, 5)
 
     def inner_fn(obs):
         outdir = os.path.join(base_dir, '{}'.format(next(time_counter)))
-        for i, plane in enumerate(planes):
-            filenames[i].append(os.path.join(outdir, 'plane{}.png'.format(plane)))
+        filenames.append(os.path.join(outdir, 'plane1.png'))
         if not os.path.exists(outdir):
             os.makedirs(outdir)
         agent.draw_grid_images(outdir=outdir, max_bounds=max_bounds)
 
     def finish_fn():
-        for i, plane in enumerate(planes):
-            images = [imageio.imread(f) for f in filenames[i]]
-            outfile = os.path.join(base_dir, 'out{}.gif'.format(plane))
-            imageio.mimsave(outfile, images, fps=3)
-            print("Wrote out video to {}.".format(outfile))
+        images = [imageio.imread(f) for f in filenames]
+        outfile = os.path.join(base_dir, '{}.gif'.format(agent_type))
+        imageio.mimsave(outfile, images, fps=3)
+        print("Wrote out video to {}.".format(outfile))
 
     final_agent = AgentObsWrapper(agent, inner_fn, finish_fn)
 
     run_single_episode(env, final_agent)
 
-def forage_explore():
-    seed = 2
+def forage_explore(agent_type='random'):
+    seed = 20
     np.random.seed(seed)
     random.seed(seed)
 
@@ -714,13 +716,31 @@ def forage_explore():
 
     env.seed(seed)
 
-    search_agent = ExploringSearchAgent(env.action_space)
-    search_agent = AlwaysJumpingAgent(search_agent)
-    search_agent = SafeAgentWrapper(search_agent)
-    agent = GridBuildingAgentWrapper(search_agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
-    # search_agent.subscribe_to_grid_agent(agent)
+    if agent_type == 'random':
+        agent = RandomAgent(env.action_space)
+        agent = AlwaysJumpingAgent(agent)
+        agent = SafeAgentWrapper(agent)
+        agent = GridBuildingAgentWrapper(agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
 
+    elif agent_type == 'roomba':
+        agent = RoombaAgent(env.action_space)
+        agent = AlwaysJumpingAgent(agent)
+        agent = SafeAgentWrapper(agent)
+        agent = GridBuildingAgentWrapper(agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
+    
+    elif agent_type == 'exploring':
+        agent = ExploringSearchAgent(env.action_space)
+        agent = AlwaysJumpingAgent(agent)
+        agent = SafeAgentWrapper(agent)
+        agent = GridBuildingAgentWrapper(agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
+
+    def finish_fn():
+        with open('foraging_{}_pos_to_ore.pkl'.format(agent_type), 'wb') as f:
+            pickle.dump(agent.pos_to_ore, f)
+
+    agent = AgentObsWrapper(agent, lambda x : True, finish_fn)
     run_single_episode(env, agent)
+
 
 def visualize_3d_test():
     seed = 0
@@ -823,12 +843,13 @@ def grid_2d_env_test():
     max_episode_steps = 500
 
     env = Grid2DEnv(layout, init_pos)
-    env = VideoWrapper(env, 'imgs/grid2denv.mp4', fps=30)
+    env = VideoWrapper(env, 'imgs/grid2denv.gif', fps=30)
     env = TimeLimit(env, max_episode_steps)
 
-    agent = RandomAgent(env.action_space)
+    # agent = RandomAgent(env.action_space)
+    agent = ExploringSearchAgent(env.action_space)
 
-    run_single_episode(env, agent)
+    run_single_episode(env, agent, verbose=True)
 
 
 
@@ -843,14 +864,14 @@ if __name__ == "__main__":
     # safety_unit_test2()
     # safety_unit_test3()
     # foraging_test()
-    # visualize_3d_from_pkl('foraging_pos_to_ore.pkl')
+    visualize_3d_from_pkl('foraging_exploring_pos_to_ore.pkl')
     # fsm_maze_test()
     # pure_search_test()
     # search_maze_test()
     # search_ascending_maze_test()
-    # open_room_test(agent_type='roomba')
+    # open_room_test(agent_type='exploring')
     # bumpy_room_test(agent_type='exploring')
-    # forage_explore()
+    # forage_explore(agent_type='exploring')
     # visualize_3d_test()
-    grid_2d_env_test()
+    # grid_2d_env_test()
 

@@ -2,12 +2,15 @@ import imageio
 import numpy as np
 import tempfile
 
-def run_single_episode(env, agent):
+def run_single_episode(env, agent, verbose=False):
     video_frames = []
     rewards = []
 
     obs = env.reset()
     agent.reset(obs)
+
+    if verbose:
+        print("Reset obs:", obs)
 
     total_reward = 0.
     
@@ -15,6 +18,10 @@ def run_single_episode(env, agent):
         action = agent(obs)
         obs, reward, done, debug_info = env.step(action)
         agent.observe(obs, reward, done, debug_info)
+
+        if verbose:
+            print("Action:", action)
+            print("Obs:", obs)
 
         total_reward += reward
         rewards.append(reward)

@@ -14,7 +14,7 @@ class SearchAgent(Agent):
 class ExploringSearchAgent(Agent):
 
     rng = np.random.RandomState(0)
-    max_countdown = 3
+    max_countdown = 2
     all_directions = ['forward', 'back', 'left', 'right']
 
     def reset(self, obs):
@@ -28,21 +28,20 @@ class ExploringSearchAgent(Agent):
 
         return super().reset(obs)
 
-    def observe(self, obs, reward, done, debug_info):
+    def __call__(self, obs):
 
         position = tuple(obs['position'])
+        position_changed = (position != self.last_position)
+        last_position = self.last_position
         self.last_position = position
 
-        return super().observe(obs, reward, done, debug_info)
-
-    def __call__(self, obs):
-        position = tuple(obs['position'])
+        print("internal_state:", self.internal_state, "position:", position, "last position:", self.last_position)
 
         if self.internal_state[0] == 'expanding':
             direction, countdown = self.internal_state[1:]
             
-            if position != self.last_position:
-                self.add_node(position, direction)
+            if position_changed:
+                self.add_node(last_position, position, direction)
                 next_direction = self.opposite_direction(direction)
                 self.internal_state = ('retracting', next_direction, self.max_countdown)
                 return self.finish_action(next_direction)
@@ -65,10 +64,15 @@ class ExploringSearchAgent(Agent):
         elif self.internal_state[0] == 'retracting':
             direction, countdown = self.internal_state[1:]
 
-            if position == self.last_position:
+            if not position_changed:
                 if countdown == 0:
-                    import pdb; pdb.set_trace()
-                    raise Exception("Failed to retract.")
+                    # import pdb; pdb.set_trace()
+                    # raise Exception("Failed to retract.")
+                    print("Warning: failed to retract. Expanding from this new position.")
+                    direction = self.all_directions[0]
+                    self.internal_state = ('expanding', direction, self.max_countdown)
+                    self.visited_positions.add(position)
+                    return self.finish_action(direction)
 
                 self.internal_state = ('retracting', direction, countdown - 1)
                 return self.finish_action(direction)
@@ -93,8 +97,8 @@ class ExploringSearchAgent(Agent):
         else:
             assert self.internal_state[0] == 'moving_to_goal'
 
-            if self.last_action is not None and self.last_position != position:
-                self.add_node(self.last_position, self.last_action)
+            if self.last_action is not None and position_changed:
+                self.add_node(last_position, position, self.last_action)
 
             if self.is_goal_position(position):
                 direction = self.all_directions[0]
@@ -105,15 +109,15 @@ class ExploringSearchAgent(Agent):
             action = self.plan_action_to_goal(position)
             return self.finish_action(action)
 
-    def add_node(self, position, direction):
-        self.position_to_action_to_neighbor[self.last_position][direction] = position
+    def add_node(self, last_position, position, direction):
+        self.position_to_action_to_neighbor[last_position][direction] = position
 
         if position not in self.position_to_action_to_neighbor:
             self.position_to_action_to_neighbor[position] = {}
 
-        opposite_direction = self.opposite_direction(direction_idx)
+        opposite_direction = self.opposite_direction(direction)
 
-        self.position_to_action_to_neighbor[position][opposite_direction] = self.last_position
+        self.position_to_action_to_neighbor[position][opposite_direction] = last_position
 
     def opposite_direction(self, direction):
         return {
@@ -151,9 +155,7 @@ class ExploringSearchAgent(Agent):
         # try:
         out = planner.plan(init_state)
         action_str = out.plan[0]
-        action = self.action_space.no_op()
-        action[action_str] = 1
-        return action
+        return action_str
         # except:
         #     print("Warning: planning problem, returning noop.")
 

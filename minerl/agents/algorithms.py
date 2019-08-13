@@ -54,12 +54,18 @@ class Planner(object):
 
     @staticmethod
     def _add_to_set(state, state_set):
-        state_tuple = tuple(state.copy()) #tuple(map(tuple, state.copy()))
+        if isinstance(state, tuple):
+            state_tuple = state
+        else:
+            state_tuple = tuple(state.copy()) #tuple(map(tuple, state.copy()))
         state_set.add(state_tuple)
 
     @staticmethod
     def _in_set(state, state_set):
-        state_tuple = tuple(state.copy()) #tuple(map(tuple, state.copy()))
+        if isinstance(state, tuple):
+            state_tuple = state
+        else:
+            state_tuple = tuple(state.copy()) #tuple(map(tuple, state.copy()))
         return state_tuple in state_set
 
     @staticmethod
