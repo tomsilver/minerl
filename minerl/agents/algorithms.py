@@ -12,7 +12,7 @@ class Planner(object):
         self.heuristic = heuristic
         self.rng = np.random.RandomState(seed)
 
-    def plan(self, init_state, goal):
+    def plan(self, init_state, goal=None):
         """A* search. Returns a PlannerOutput object.
         """
         pqueue = []

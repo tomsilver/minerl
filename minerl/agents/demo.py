@@ -8,6 +8,7 @@ from search_agent import SearchAgent, ExploringSearchAgent
 from minerl.env.wrappers import GridWorldWrapper, VideoWrapper
 from utils import run_single_episode, fill_in_xml
 from algorithms import Planner
+from minerl.env.grid2denv import Grid2DEnv
 
 from gym.wrappers import TimeLimit
 
@@ -808,6 +809,29 @@ def visualize_3d_from_pkl(pkl_filename):
     imageio.mimsave(outfile, images, fps=5)
     print("Wrote out video to {}.".format(outfile))
 
+def grid_2d_env_test():
+    layout = np.array([
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+        [0, 1, 0, 1, 0, 0, 0, 0, 0, 0],
+        [0, 1, 0, 1, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 1, 1, 1, 0, 0, 0, 0],
+    ])
+    init_pos = (0, 0)
+    max_episode_steps = 500
+
+    env = Grid2DEnv(layout, init_pos)
+    env = VideoWrapper(env, 'imgs/grid2denv.mp4', fps=30)
+    env = TimeLimit(env, max_episode_steps)
+
+    agent = RandomAgent(env.action_space)
+
+    run_single_episode(env, agent)
+
+
+
 
 
 if __name__ == "__main__":
@@ -824,8 +848,9 @@ if __name__ == "__main__":
     # pure_search_test()
     # search_maze_test()
     # search_ascending_maze_test()
-    open_room_test(agent_type='roomba')
+    # open_room_test(agent_type='roomba')
     # bumpy_room_test(agent_type='exploring')
     # forage_explore()
     # visualize_3d_test()
+    grid_2d_env_test()
 

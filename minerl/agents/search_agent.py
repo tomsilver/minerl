@@ -13,8 +13,6 @@ class SearchAgent(Agent):
 
 class ExploringSearchAgent(Agent):
 
-    TODO TEST THIS IN GRID WORLD NOT MINECRAFT
-
     rng = np.random.RandomState(0)
     max_countdown = 3
     all_directions = ['forward', 'back', 'left', 'right']
@@ -33,7 +31,6 @@ class ExploringSearchAgent(Agent):
     def observe(self, obs, reward, done, debug_info):
 
         position = tuple(obs['position'])
-        self.visited_positions.add(position)
         self.last_position = position
 
         return super().observe(obs, reward, done, debug_info)
@@ -56,7 +53,7 @@ class ExploringSearchAgent(Agent):
             
             elif direction == self.all_directions[-1]:
                 self.internal_state = ('moving_to_goal',)
-                action = self.plan_action_to_goal()
+                action = self.plan_action_to_goal(position)
                 return self.finish_action(action)
 
             else:
@@ -84,7 +81,7 @@ class ExploringSearchAgent(Agent):
 
             if expanding_direction == self.all_directions[-1]:
                 self.internal_state = ('moving_to_goal',)
-                action = self.plan_action_to_goal()
+                action = self.plan_action_to_goal(position)
                 return self.finish_action(action)
 
             else:
@@ -96,28 +93,71 @@ class ExploringSearchAgent(Agent):
         else:
             assert self.internal_state[0] == 'moving_to_goal'
 
+            if self.last_action is not None and self.last_position != position:
+                self.add_node(self.last_position, self.last_action)
+
             if self.is_goal_position(position):
                 direction = self.all_directions[0]
                 self.internal_state = ('expanding', direction, self.max_countdown)
+                self.visited_positions.add(position)
                 return self.finish_action(direction)
 
-            action = self.plan_action_to_goal()
+            action = self.plan_action_to_goal(position)
             return self.finish_action(action)
 
     def add_node(self, position, direction):
-        TODO
+        self.position_to_action_to_neighbor[self.last_position][direction] = position
+
+        if position not in self.position_to_action_to_neighbor:
+            self.position_to_action_to_neighbor[position] = {}
+
+        opposite_direction = self.opposite_direction(direction_idx)
+
+        self.position_to_action_to_neighbor[position][opposite_direction] = self.last_position
 
     def opposite_direction(self, direction):
-        TODO
+        return {
+            'forward' : 'back',
+            'back' : 'forward',
+            'left' : 'right',
+            'right' : 'left'
+        }[direction]
 
-    def finish_action(self, action):
-        TODO
+    def finish_action(self, action_str):
+        self.last_action = action_str
+        action = self.action_space.no_op()
+        action[action_str] = 1
+        return action
 
     def is_goal_position(self, position):
-        TODO
+        return position not in self.visited_positions
 
-    def plan_action_to_goal(self):
-        TODO
+    def plan_action_to_goal(self, position):
+        init_state = position
+
+        def model(state, action):
+            if state in self.position_to_action_to_neighbor:
+                if action in self.position_to_action_to_neighbor[state]:
+                    return self.position_to_action_to_neighbor[state][action]
+            return state
+
+        action_list = self.all_directions
+        goal_check = lambda s, g : self.is_goal_position(s)
+        heuristic = lambda s : 0.
+        seed = self.rng.randint(1000000)
+
+        planner = Planner(model, action_list, goal_check, heuristic, seed=seed)
+
+        # try:
+        out = planner.plan(init_state)
+        action_str = out.plan[0]
+        action = self.action_space.no_op()
+        action[action_str] = 1
+        return action
+        # except:
+        #     print("Warning: planning problem, returning noop.")
+
+        # return self.action_space.no_op()
 
 
 
