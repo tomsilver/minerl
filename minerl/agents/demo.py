@@ -480,7 +480,7 @@ def open_room_test(agent_type='exploring'):
     grid_mins = (-1, -1, -1)
     grid_maxs = (1, 1, 1)
     viewpoint = 1
-    max_episode_steps = 50
+    max_episode_steps = 100
 
     env = gym.make('MineRLOpenRoomTest-v0')
     env = GridWorldWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
@@ -544,7 +544,7 @@ def bumpy_room_test(agent_type='exploring'):
     grid_mins = (-1, -1, -1)
     grid_maxs = (1, 1, 1)
     viewpoint = 1
-    max_episode_steps = 50
+    max_episode_steps = 100
 
     env = gym.make('MineRLBumpyRoomTest-v0')
     env = GridWorldWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
@@ -640,20 +640,20 @@ def forage_explore():
     run_single_episode(env, agent)
 
 def visualize_3d_test():
-    seed = 2
+    seed = 0
     np.random.seed(seed)
     random.seed(seed)
 
     grid_mins = (-2, -2, -2)
     grid_maxs = (2, 2, 2)
     viewpoint = 1
-    max_episode_steps = 250
+    max_episode_steps = 2500
 
     env = gym.make('MineRLForaging-v0')
     env = VideoWrapper(env, 'imgs/inner_foraging_test.mp4', fps=30)
     env = GridWorldWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
     env = TimeLimit(env, max_episode_steps)
-    env = VideoWrapper(env, 'imgs/foraging_test.gif', fps=30)
+    env = VideoWrapper(env, 'imgs/foraging_test.mp4', fps=30)
 
     env.unwrapped.xml_file = fill_in_xml(env.xml_file, {
         'GRID_MIN_X' : grid_mins[2],
@@ -738,7 +738,7 @@ if __name__ == "__main__":
     # search_maze_test()
     # search_ascending_maze_test()
     # open_room_test(agent_type='exploring')
-    # bumpy_room_test(agent_type='exploring')
+    bumpy_room_test(agent_type='exploring')
     # forage_explore()
-    visualize_3d_test()
+    # visualize_3d_test()
 
