@@ -484,7 +484,7 @@ def search_maze_test():
     agent = GridBuildingAgentWrapper(agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
 
     agent1.set_goal((0, 2, 0))
-    agent1.subscribe_to_grid_agent(agent)
+    # agent1.subscribe_to_grid_agent(agent)
 
     run_single_episode(env, agent)
 
@@ -546,7 +546,7 @@ def search_ascending_maze_test():
     agent = GridBuildingAgentWrapper(agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
 
     agent1.set_goal((0, 2, 0))
-    agent1.subscribe_to_grid_agent(agent)
+    # agent1.subscribe_to_grid_agent(agent)
 
     run_single_episode(env, agent)
 
@@ -590,7 +590,7 @@ def open_room_test(agent_type='exploring'):
     elif agent_type == 'exploring':
         search_agent = ExploringSearchAgent(env.action_space)
         agent = GridBuildingAgentWrapper(search_agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
-        search_agent.subscribe_to_grid_agent(agent)
+        # search_agent.subscribe_to_grid_agent(agent)
 
     else:
         raise NotImplementedError()
@@ -655,7 +655,7 @@ def bumpy_room_test(agent_type='exploring'):
         search_agent = ExploringSearchAgent(env.action_space)
         search_agent = AlwaysJumpingAgent(search_agent)
         agent = GridBuildingAgentWrapper(search_agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
-        search_agent.subscribe_to_grid_agent(agent)
+        # search_agent.subscribe_to_grid_agent(agent)
 
     else:
         raise NotImplementedError()
@@ -717,7 +717,7 @@ def forage_explore():
     search_agent = AlwaysJumpingAgent(search_agent)
     search_agent = SafeAgentWrapper(search_agent)
     agent = GridBuildingAgentWrapper(search_agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
-    search_agent.subscribe_to_grid_agent(agent)
+    # search_agent.subscribe_to_grid_agent(agent)
 
     run_single_episode(env, agent)
 
@@ -754,7 +754,7 @@ def visualize_3d_test():
     search_agent = SafeAgentWrapper(search_agent)
     agent = GridBuildingAgentWrapper(search_agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
     safe_agent = SafeAgentWrapper(agent)
-    search_agent.subscribe_to_grid_agent(agent)
+    # search_agent.subscribe_to_grid_agent(agent)
 
     def finish_fn():
         with open('explore_pos_to_ore.pkl', 'wb') as f:
