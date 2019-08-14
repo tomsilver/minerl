@@ -1017,7 +1017,19 @@ def wood_foraging_test():
 
     done2 = DoneTimer(5, finish_fn=done2)
 
-    agent = FSMAgent([(agent0, done0), (agent1, done1), (agent2, done2)], repeat=True)
+    action_strs = ['left', 'forward', 'forward', 'right', 'right', 'back', 'back', 'left']
+    action_sequence = []
+    for action_str in action_strs:
+        action = env.action_space.no_op()
+        action[action_str] = 1
+        action_sequence.append(action)
+
+    agent3 = SequentialAgent(env.action_space, action_sequence)
+    agent3 = SafeAgentWrapper(agent3)
+    agent3 = AlwaysJumpingAgent(agent3)
+    done3 = DoneTimer(len(action_sequence))
+
+    agent = FSMAgent([(agent0, done0), (agent1, done1), (agent2, done2), (agent3, done3)], repeat=True)
 
     agent = GridBuildingAgentWrapper(agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
 

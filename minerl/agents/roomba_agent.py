@@ -3,7 +3,7 @@ from agent import Agent
 import numpy as np
 
 class RoombaAgent(Agent):
-    rng = np.random.RandomState(0)
+    rng = np.random.RandomState(2)
     prob_change = 0.1
     stuck_threshold = 3
 
