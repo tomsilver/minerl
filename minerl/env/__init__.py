@@ -501,6 +501,7 @@ contributed_env_infos = [
     ('MineRLOpenRoomTest-v0', 'open_room_test.xml'),
     ('MineRLBumpyRoomTest-v0', 'bumpy_room_test.xml'),
     ('MineRLWoodUnitTest-v0', 'wood_unit_test.xml'),
+    ('MineRLWoodUnitTest2-v0', 'wood_unit_test2.xml'),
 ]
 
 for env_id, xml in contributed_env_infos:
@@ -514,6 +515,7 @@ for env_id, xml in contributed_env_infos:
                 'XPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
                 'YPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
                 'ZPos': spaces.Box(low=-2**63, high=2**63, shape=(1,), dtype=np.int64),
+                'Yaw' : spaces.Box(low=0, high=360, shape=(1,), dtype=np.float32),
                 'grid': spaces.MultiDiscrete([5, 5, 5]),
                 'inventory': spaces.Dict({
                     'dirt': spaces.Box(low=0, high=2304, shape=(), dtype=np.int),
@@ -547,6 +549,7 @@ for env_id, xml in contributed_env_infos:
                 # "right": spaces.Box(low=-1, high=1, shape=(1,), dtype=np.float32),
                 "move" : spaces.Box(low=-1, high=1, shape=(1,), dtype=np.float32),
                 "strafe" : spaces.Box(low=-1, high=1, shape=(1,), dtype=np.float32),
+                # "turn" : spaces.Box(low=-1, high=1, shape=(1,), dtype=np.float32),
                 "jump" : spaces.Discrete(2),
                 "attack" : spaces.Discrete(2),
             }),

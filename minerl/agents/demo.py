@@ -889,6 +889,46 @@ def wood_unit_test():
 
     run_single_episode(env, agent)
 
+def wood_unit_test2():
+    seed = 1
+    np.random.seed(seed)
+    random.seed(seed)
+    max_episode_steps = 20
+    grid_mins = (-2, -1, -2)
+    grid_maxs = (2, -1, 2)
+    viewpoint = 0
+
+    env = gym.make('MineRLWoodUnitTest2-v0')
+    env = VideoWrapper(env, 'imgs/inner_wood_test2.mp4', fps=30)
+    env = GridWorldWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
+    env = TimeLimit(env, max_episode_steps)
+    env = VideoWrapper(env, 'imgs/wood_unit_test2.gif', fps=10)
+
+    env.unwrapped.xml_file = fill_in_xml(env.xml_file, {
+        'GRID_MIN_X' : grid_mins[2],
+        'GRID_MIN_Y' : grid_mins[1],
+        'GRID_MIN_Z' : grid_mins[0],
+        'GRID_MAX_X' : grid_maxs[2],
+        'GRID_MAX_Y' : grid_maxs[1],
+        'GRID_MAX_Z' : grid_maxs[0],
+        'VIEWPOINT' : viewpoint,
+    })
+
+    env.seed(seed)
+
+    action_strs = ['right'] * 1 + ['forward'] * 1 + ['attack'] * 5
+    action_sequence = []
+    for action_str in action_strs:
+        action = env.action_space.no_op()
+        action[action_str] = 1
+        action_sequence.append(action)
+    final_action = env.action_space.no_op()
+
+    agent = SequentialAgent(env.action_space, action_sequence, final_action=final_action)
+    agent = GridBuildingAgentWrapper(agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
+
+    run_single_episode(env, agent)
+
 
 
 if __name__ == "__main__":
@@ -910,5 +950,6 @@ if __name__ == "__main__":
     # forage_explore(agent_type='exploring', seed=24)
     # visualize_3d_test()
     # grid_2d_env_test()
-    wood_unit_test()
+    # wood_unit_test()
+    wood_unit_test2()
 

@@ -13,6 +13,7 @@ class GridWorldWrapper(gym.Wrapper):
     """A wrapper around MineRLEnv so that it can be treated as a discrete gridworld.
     """
     action_scale = 0.8
+    # turn_action_scale = 0.1
 
     def __init__(self, env, max_inner_steps=25, threshold=0.01, grid_mins=(-2, -1, -2), grid_maxs=(2, -1, 2)):
         super().__init__(env)
@@ -23,6 +24,8 @@ class GridWorldWrapper(gym.Wrapper):
         self.max_inner_steps = max_inner_steps
         self.threshold = threshold
 
+        self.attacking = 0
+
         self.action_space = spaces.Dict(spaces={
             "forward": spaces.Discrete(2), 
             "back": spaces.Discrete(2), 
@@ -32,11 +35,8 @@ class GridWorldWrapper(gym.Wrapper):
             "attack": spaces.Discrete(2),
         })
 
-        self.attacking = 0
-
     def step_in_env(self, action):
         action['attack'] = self.attacking
-
         return self.env.step(action)
 
     def step_to_target(self, target_position):
@@ -111,10 +111,7 @@ class GridWorldWrapper(gym.Wrapper):
         shape = 1 + np.subtract(self.grid_maxs, self.grid_mins)
 
         arr = np.array(grid).reshape((shape[2], shape[0], shape[1]), order='F')
-        # print(arr[:, :, 1])
-        # import pdb; pdb.set_trace()
         arr = np.moveaxis(arr, 0, -1)
-        # import pdb; pdb.set_trace()
         arr = np.rot90(arr, k=2, axes=(0, 2))
         return arr
 
@@ -134,8 +131,10 @@ class GridWorldWrapper(gym.Wrapper):
 
     def finish_stepping(self):
         # Always let settle b/c jumping observations are unreliable
+        action = self.env.action_space.no_op()
         for _ in range(5):
-            obs, reward, done, debug_info = self.step_in_env(self.env.action_space.no_op())
+            obs, reward, done, debug_info = self.step_in_env(action)
+
             if done:
                 break
         return obs, reward, done, debug_info
