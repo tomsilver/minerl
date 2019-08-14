@@ -9,7 +9,7 @@ class FSMAgent(Agent):
         if self.repeat and self.current_state_idx >= len(self.states):
             self.reset(obs)
 
-        # print("fsm state:", self.current_state_idx)
+        print("fsm state:", self.current_state_idx)
 
         agent, done_fn = self.states[self.current_state_idx]
         action = agent(obs)
@@ -31,12 +31,15 @@ class FSMAgent(Agent):
 
 
 class DoneTimer(object):
-    def __init__(self, time):
+    def __init__(self, time, finish_fn=None):
         self.time = time
         self.init_time = time
+        self.finish_fn = finish_fn
 
     def __call__(self, obs):
         self.time -= 1
+        if self.finish_fn is not None and self.finish_fn(obs):
+            return True
         return self.time <= 0
 
     def reset(self):

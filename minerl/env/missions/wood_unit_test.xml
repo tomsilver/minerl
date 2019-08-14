@@ -20,7 +20,7 @@
         <ServerHandlers>
             <FlatWorldGenerator generatorString="3;22,4,13;1;village"/>
             <DrawingDecorator>
-                <DrawCuboid type="log" x1="0" x2="0" y1="3" y2="6" z1="3" z2="3"/>
+                <DrawCuboid type="log" x1="0" x2="0" y1="3" y2="6" z1="1" z2="1"/>
             </DrawingDecorator>
             <ServerQuitFromTimeUp timeLimitMs="300000" description="out_of_time"/>
             <ServerQuitWhenAnyAgentFinishes/>
@@ -39,7 +39,9 @@
             <FileBasedPerformanceProducer/>
             <ObservationFromFullInventory flat="false"/>
             <ObservationFromFullStats/>
+            
             <ContinuousMovementCommands/>
+
             <CameraCommands/>
             <ObservationFromGrid>
                <Grid name="grid">

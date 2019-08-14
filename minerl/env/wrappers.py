@@ -13,7 +13,6 @@ class GridWorldWrapper(gym.Wrapper):
     """A wrapper around MineRLEnv so that it can be treated as a discrete gridworld.
     """
     action_scale = 0.8
-    # turn_action_scale = 0.1
 
     def __init__(self, env, max_inner_steps=25, threshold=0.01, grid_mins=(-2, -1, -2), grid_maxs=(2, -1, 2)):
         super().__init__(env)
@@ -24,7 +23,7 @@ class GridWorldWrapper(gym.Wrapper):
         self.max_inner_steps = max_inner_steps
         self.threshold = threshold
 
-        # self.attacking = 0
+        self.attacking = 0
 
         self.action_space = spaces.Dict(spaces={
             "forward": spaces.Discrete(2), 
@@ -33,14 +32,10 @@ class GridWorldWrapper(gym.Wrapper):
             "right": spaces.Discrete(2),
             "jump": spaces.Discrete(2),
             "attack": spaces.Discrete(2),
-            "attack_left": spaces.Discrete(2),
-            "attack_right": spaces.Discrete(2),
-            "attack_back": spaces.Discrete(2),
         })
 
     def step_in_env(self, action):
-        # action['attack'] = self.attacking
-        print("taking action", action)
+        action['attack'] = self.attacking
         return self.env.step(action)
 
     def step_to_target(self, target_position):
@@ -84,10 +79,7 @@ class GridWorldWrapper(gym.Wrapper):
             jump_action['jump'] = 1
             self.step_in_env(jump_action)
 
-        if action['attack'] or action['attack_back'] or action['attack_left'] or action['attack_right']:
-            return self.step_attack(action)
-
-        # self.attacking = action['attack']
+        self.attacking = action['attack']
 
         target_position = self.get_target_position(self.position, action)
 
@@ -101,51 +93,6 @@ class GridWorldWrapper(gym.Wrapper):
         obs['grid_arr'] = self.grid_to_array(obs['grid'])
 
         return obs, reward, done, debug_info
-
-    def step_attack(self, action):
-        if action['attack']:
-            self.execute_attack()
-
-        elif action['attack_back']:
-            self.execute_turn(1.0, k=2)
-            self.execute_attack()
-            self.execute_turn(-1.0, k=2)
-
-        elif action['attack_left']:
-            self.execute_turn(-1.0)
-            self.execute_attack()
-            self.execute_turn(1.0)
-
-        elif action['attack_right']:
-            self.execute_turn(1.0)
-            self.execute_attack()
-            self.execute_turn(-1.0)
-        
-        obs, reward, done, debug_info = self.finish_stepping()
-
-        self.position = np.array([obs['XPos'], obs['YPos'], obs['ZPos']])
-        obs['position'] = self.discretize_position(self.position)
-        obs['grid_arr'] = self.grid_to_array(obs['grid'])
-
-        return obs, reward, done, debug_info
-
-    def execute_attack(self):
-        for _ in range(10):
-            action = self.env.action_space.no_op()
-            action['attack'] = 1
-            self.step_in_env(action)
-
-    def execute_turn(self, direction, k=1):
-        for _ in range(k):
-            action = self.env.action_space.no_op()
-            action['turn'] = direction
-            print("executing turn action:", action)
-            self.step_in_env(action)
-
-            for _ in range(5):
-                action = self.env.action_space.no_op()
-                action['move'] = 1.
-                self.step_in_env(action)
 
     def discretize_position(self, position):
         new_p = []
@@ -186,11 +133,6 @@ class GridWorldWrapper(gym.Wrapper):
         action = self.env.action_space.no_op()
         for _ in range(5):
             obs, reward, done, debug_info = self.step_in_env(action)
-
-            if abs(obs['Yaw']) > self.threshold:
-                angle = (-obs['Yaw'] + 180) % 360 - 180
-                print("obs['Yaw'], turn angle:", obs['Yaw'], angle)
-                action['turn'] = self.turn_action_scale * angle
 
             if done:
                 break
