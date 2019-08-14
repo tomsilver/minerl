@@ -857,7 +857,7 @@ def wood_unit_test():
     max_episode_steps = 20
     grid_mins = (-2, -1, -2)
     grid_maxs = (2, -1, 2)
-    viewpoint = 1
+    viewpoint = 0
 
     env = gym.make('MineRLWoodUnitTest-v0')
     env = GridWorldWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
@@ -883,9 +883,6 @@ def wood_unit_test():
         action[action_str] = 1
         action_sequence.append(action)
     final_action = env.action_space.no_op()
-
-    action_sequence[10]['crouch'] = 1
-    action_sequence[10]['attack'] = 1
 
     agent = SequentialAgent(env.action_space, action_sequence, final_action=final_action)
     agent = GridBuildingAgentWrapper(agent, grid_mins=grid_mins, grid_maxs=grid_maxs)

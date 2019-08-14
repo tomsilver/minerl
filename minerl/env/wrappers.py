@@ -30,15 +30,12 @@ class GridWorldWrapper(gym.Wrapper):
             "right": spaces.Discrete(2),
             "jump": spaces.Discrete(2),
             "attack": spaces.Discrete(2),
-            "crouch": spaces.Discrete(2),
         })
 
         self.attacking = 0
-        self.crouching = 0
 
     def step_in_env(self, action):
         action['attack'] = self.attacking
-        action['crouch'] = self.crouching
 
         return self.env.step(action)
 
@@ -84,7 +81,6 @@ class GridWorldWrapper(gym.Wrapper):
             self.step_in_env(jump_action)
 
         self.attacking = action['attack']
-        self.crouching = action['crouch']
 
         target_position = self.get_target_position(self.position, action)
 
