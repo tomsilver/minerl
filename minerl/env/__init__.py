@@ -552,6 +552,7 @@ for env_id, xml in contributed_env_infos:
                 # "turn" : spaces.Box(low=-1, high=1, shape=(1,), dtype=np.float32),
                 "jump" : spaces.Discrete(2),
                 "attack" : spaces.Discrete(2),
+                "camera": spaces.Box(low=-180, high=180, shape=(2,), dtype=np.float32),
             }),
             'docstr': """TODO"""
         },

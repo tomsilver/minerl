@@ -893,9 +893,9 @@ def wood_unit_test2():
     seed = 1
     np.random.seed(seed)
     random.seed(seed)
-    max_episode_steps = 20
+    max_episode_steps = 40
     grid_mins = (-2, -1, -2)
-    grid_maxs = (2, -1, 2)
+    grid_maxs = (2, 1, 2)
     viewpoint = 0
 
     env = gym.make('MineRLWoodUnitTest2-v0')
@@ -916,16 +916,74 @@ def wood_unit_test2():
 
     env.seed(seed)
 
-    action_strs = ['right'] * 1 + ['forward'] * 1 + ['attack'] * 5
-    action_sequence = []
-    for action_str in action_strs:
-        action = env.action_space.no_op()
-        action[action_str] = 1
-        action_sequence.append(action)
-    final_action = env.action_space.no_op()
+    agent0 = RandomAgent(env.action_space)
+    def done0(obs):
+        in_front_above = obs['grid_arr'][1, 2, 2]
+        # print("in_front_above:", in_front_above)
+        # import pdb; pdb.set_trace()
+        return in_front_above == 'log'
 
-    agent = SequentialAgent(env.action_space, action_sequence, final_action=final_action)
+    attack_action = env.action_space.no_op()
+    attack_action['attack'] = 1
+
+    agent1 = SequentialAgent(env.action_space, [], final_action=attack_action)
+    done1 = DoneTimer(5)
+
+    agent = FSMAgent([(agent0, done0), (agent1, done1)], repeat=True)
+
     agent = GridBuildingAgentWrapper(agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
+
+    run_single_episode(env, agent)
+
+
+def wood_foraging_test():
+    seed = 3
+    np.random.seed(seed)
+    random.seed(seed)
+    max_episode_steps = 250
+    grid_mins = (-2, -2, -2)
+    grid_maxs = (2, 2, 2)
+    viewpoint = 1
+
+    env = gym.make('MineRLForaging-v0')
+    env = GridWorldWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
+    env = TimeLimit(env, max_episode_steps)
+    env = VideoWrapper(env, 'imgs/wood_foraging_test.gif', fps=30)
+
+    env.unwrapped.xml_file = fill_in_xml(env.xml_file, {
+        'GRID_MIN_X' : grid_mins[2],
+        'GRID_MIN_Y' : grid_mins[1],
+        'GRID_MIN_Z' : grid_mins[0],
+        'GRID_MAX_X' : grid_maxs[2],
+        'GRID_MAX_Y' : grid_maxs[1],
+        'GRID_MAX_Z' : grid_maxs[0],
+        'VIEWPOINT' : viewpoint,
+    })
+
+    env.seed(seed)
+
+    agent0 = RoombaAgent(env.action_space)
+    agent0 = AlwaysJumpingAgent(agent0)
+    agent0 = SafeAgentWrapper(agent0)
+
+    def done0(obs):
+        in_front_above = obs['grid_arr'][1, 3, 2]
+        # print("in_front_above:", in_front_above)
+        return in_front_above == 'log'
+
+    attack_action = env.action_space.no_op()
+    attack_action['attack'] = 1
+    agent1 = SequentialAgent(env.action_space, [], final_action=attack_action)
+    done1 = DoneTimer(5)
+
+    agent = FSMAgent([(agent0, done0), (agent1, done1)], repeat=True)
+
+    agent = GridBuildingAgentWrapper(agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
+
+    def inner_fn(obs):
+        print("logs in inventory:", obs['inventory']['log'])
+
+    agent = AgentObsWrapper(agent, inner_fn)
 
     run_single_episode(env, agent)
 
@@ -950,6 +1008,7 @@ if __name__ == "__main__":
     # forage_explore(agent_type='exploring', seed=24)
     # visualize_3d_test()
     # grid_2d_env_test()
-    # wood_unit_test()
-    wood_unit_test2()
+    wood_unit_test()
+    # wood_unit_test2()
+    # wood_foraging_test()
 
