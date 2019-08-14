@@ -1041,6 +1041,58 @@ def wood_foraging_test():
     run_single_episode(env, agent)
 
 
+def crafting_table_test():
+    seed = 1
+    np.random.seed(seed)
+    random.seed(seed)
+    max_episode_steps = 20
+    grid_mins = (-2, -1, -2)
+    grid_maxs = (2, -1, 2)
+    viewpoint = 2
+
+    env = gym.make('MineRLCraftingTableTest-v0')
+    env = VideoWrapper(env, 'imgs/crafting_table_test.gif', fps=2)
+    env = TimeLimit(env, max_episode_steps)
+
+    env.unwrapped.xml_file = fill_in_xml(env.xml_file, {
+        'GRID_MIN_X' : grid_mins[2],
+        'GRID_MIN_Y' : grid_mins[1],
+        'GRID_MIN_Z' : grid_mins[0],
+        'GRID_MAX_X' : grid_maxs[2],
+        'GRID_MAX_Y' : grid_maxs[1],
+        'GRID_MAX_Z' : grid_maxs[0],
+        'VIEWPOINT'  : viewpoint,
+    })
+
+    env.seed(seed)
+
+    action_sequence = [env.action_space.no_op() for _ in range(20)]
+    action_sequence[0]['craft'] = 'planks'
+    action_sequence[1]['craft'] = 'planks'
+    action_sequence[2]['craft'] = 'planks'
+    action_sequence[3]['craft'] = 'stick'
+    action_sequence[4]['craft'] = 'crafting_table'
+    action_sequence[5]['camera'] = np.array([45.0, 0.0], dtype=np.float32)
+    action_sequence[6]['place'] = 'crafting_table'
+    action_sequence[7]['camera'] = np.array([-45.0, 0.0], dtype=np.float32)
+    action_sequence[8]['nearbyCraft'] = 'wooden_pickaxe'
+    action_sequence[9]['equip'] = 'wooden_pickaxe'
+    action_sequence[10]['attack'] = 1
+    action_sequence[11]['attack'] = 1
+    action_sequence[12]['attack'] = 1
+    action_sequence[13]['attack'] = 1
+    action_sequence[14]['attack'] = 1
+    final_action = env.action_space.no_op()
+
+    agent = SequentialAgent(env.action_space, action_sequence, final_action=final_action)
+
+    def inner_fn(obs):
+        print("inventory:", obs['inventory'])
+
+    agent = AgentObsWrapper(agent, inner_fn)
+
+    run_single_episode(env, agent)
+
 
 if __name__ == "__main__":
     # flatworld_demo()
@@ -1063,5 +1115,6 @@ if __name__ == "__main__":
     # grid_2d_env_test()
     # wood_unit_test()
     # wood_unit_test2()
-    wood_foraging_test()
+    # wood_foraging_test()
+    crafting_table_test()
 

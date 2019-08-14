@@ -502,6 +502,7 @@ contributed_env_infos = [
     ('MineRLBumpyRoomTest-v0', 'bumpy_room_test.xml'),
     ('MineRLWoodUnitTest-v0', 'wood_unit_test.xml'),
     ('MineRLWoodUnitTest2-v0', 'wood_unit_test2.xml'),
+    ('MineRLCraftingTableTest-v0', 'crafting_table_test.xml'),
 ]
 
 for env_id, xml in contributed_env_infos:
@@ -537,6 +538,14 @@ for env_id, xml in contributed_env_infos:
                     'iron_axe': spaces.Box(low=0, high=2304, shape=(), dtype=np.int),
                     'iron_pickaxe': spaces.Box(low=0, high=2304, shape=(), dtype=np.int),
                 }),
+                'equipped_items': spaces.Dict({
+                    'mainhand': spaces.Dict({
+                        'type': spaces.Enum('none', 'air', 'wooden_axe', 'wooden_pickaxe', 'stone_axe', 'stone_pickaxe',
+                                            'iron_axe', 'iron_pickaxe', 'other'),
+                        'damage': spaces.Box(low=-1, high=1562, shape=(), dtype=np.int),
+                        'maxDamage': spaces.Box(low=-1, high=1562, shape=(), dtype=np.int),
+                    })
+                })
             }),
             'action_space': spaces.Dict(spaces={
                 # "forward": spaces.Discrete(2), 
@@ -553,6 +562,12 @@ for env_id, xml in contributed_env_infos:
                 "jump" : spaces.Discrete(2),
                 "attack" : spaces.Discrete(2),
                 # "setYaw": spaces.Box(low=-180, high=180, shape=(2,), dtype=np.int),
+                "camera": spaces.Box(low=-180, high=180, shape=(2,), dtype=np.float32),
+                "place": spaces.Enum('none', 'dirt', 'log', 'stone', 'cobblestone', 'crafting_table', 'furnace', 'torch'),
+                "equip": spaces.Enum('none', 'air', 'wooden_axe', 'wooden_pickaxe', 'stone_axe', 'stone_pickaxe', 'iron_axe', 'iron_pickaxe'),
+                "craft": spaces.Enum('none', 'torch', 'stick', 'planks', 'crafting_table'),
+                "nearbyCraft": spaces.Enum('none', 'wooden_axe', 'wooden_pickaxe', 'stone_axe', 'stone_pickaxe', 'iron_axe', 'iron_pickaxe', 'furnace'),
+                "nearbySmelt": spaces.Enum('none', 'iron_ingot', 'coal')
             }),
             'docstr': """TODO"""
         },
