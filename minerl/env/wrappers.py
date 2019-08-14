@@ -1,5 +1,6 @@
 from minerl.env import spaces
 
+import copy
 import gym
 import numpy as np
 import imageio
@@ -148,6 +149,50 @@ class GridWorldWrapper(gym.Wrapper):
             action['move'] = self.action_scale * (target_position[2] - position[2])
 
         return action
+
+
+class DiscretePositionWrapper(gym.Wrapper):
+
+    def __init__(self, env, grid_mins=(-2, -1, -2), grid_maxs=(2, -1, 2)):
+        super().__init__(env)
+
+        self.grid_mins = grid_mins
+        self.grid_maxs = grid_maxs
+
+    def reset(self):
+        obs = self.env.reset()
+        self.position = np.array([obs['XPos'], obs['YPos'], obs['ZPos']])
+        obs['position'] = self.discretize_position(self.position)
+        obs['grid_arr'] = self.grid_to_array(obs['grid'])
+        return obs
+
+    def step(self, action):
+        obs, reward, done, debug_info = self.env.step(action)
+        self.position = np.array([obs['XPos'], obs['YPos'], obs['ZPos']])
+        obs['position'] = self.discretize_position(self.position)
+        obs['grid_arr'] = self.grid_to_array(obs['grid'])
+        return obs, reward, done, debug_info
+
+    def discretize_position(self, position):
+        new_p = []
+        # print("position:", position)
+        for p in position:
+            if p.is_integer():
+                new_p.append(p - 1)
+            else:
+                new_p.append(np.floor(p))
+        discretized_position = np.array(new_p, dtype=np.int64)
+        # print("discretized_position:", discretized_position)
+        return discretized_position
+
+    def grid_to_array(self, grid):
+        shape = 1 + np.subtract(self.grid_maxs, self.grid_mins)
+
+        arr = np.array(grid).reshape((shape[2], shape[0], shape[1]), order='F')
+        arr = np.moveaxis(arr, 0, -1)
+        arr = np.rot90(arr, k=2, axes=(0, 2))
+        return arr
+
 
 
 class VideoWrapper(gym.Wrapper):

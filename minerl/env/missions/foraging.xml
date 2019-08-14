@@ -32,11 +32,37 @@
                 <Width>256</Width>
                 <Height>256</Height>
             </VideoProducer>
+            
             <FileBasedPerformanceProducer/>
             <ObservationFromFullInventory flat="false"/>
             <ObservationFromFullStats/>
+            <ObservationFromEquippedItem/>
+            
             <ContinuousMovementCommands/>
+
             <CameraCommands/>
+
+            <SimpleCraftCommands/>
+            <!--        <Item type="minecraft:stick"/>-->
+            <!--        <Item type="minecraft:planks"/>-->
+            <!--        <Item type="minecraft:torch"/>-->
+            <NearbyCraftCommands/>
+            <!--        <Item type="minecraft:wooden_axe"/>-->
+            <!--        <Item type="minecraft:wooden_pickaxe"/>-->
+            <!--        <Item type="minecraft:stone_axe"/>-->
+            <!--        <Item type="minecraft:stone_pickaxe"/>-->
+            <!--        <Item type="minecraft:iron_pickaxe"/>-->
+            <NearbySmeltCommands/>
+            <!--        <Item type="minecraft:iron_ingot"/>-->
+            <PlaceCommands/>
+            <!--          <Item type="minecraft:crafting_table"/>-->
+            <!--          <Item type="minecraft:furnace"/>-->
+            <!--          <Item type="minecraft:torch"/>-->
+            <EquipCommands/>
+            <!--        <Item type="minecraft:stone_pickaxe"/>-->
+            <!--        <Item type="minecraft:iron_pickaxe"/>-->
+            <PauseCommand/>
+
             <ObservationFromGrid>
                <Grid name="grid">
                   <min x="$(GRID_MIN_X)" y="$(GRID_MIN_Y)" z="$(GRID_MIN_Z)" />
@@ -44,16 +70,6 @@
                </Grid>
             </ObservationFromGrid>
 
-            <RewardForMissionEnd>
-                <Reward description="out_of_time" reward="0" />
-            </RewardForMissionEnd>
-            <AgentQuitFromTouchingBlockType>
-                <Block type="diamond_block"/>
-            </AgentQuitFromTouchingBlockType>
-            <RewardForTouchingBlockType>
-                <Block reward="100.0" type="diamond_block" behaviour="onceOnly"/>
-            </RewardForTouchingBlockType>
-            <PauseCommand/>
         </AgentHandlers>
     </AgentSection>
 </Mission>

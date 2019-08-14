@@ -72,8 +72,12 @@ class SafeAgentWrapper(AgentWrapper):
 
 
     def get_next_rel_pos(self, action, obs):
-        dz = action['back'] - action['forward']
-        dx = action['right'] - action['left']
+        try:
+            dz = action['back'] - action['forward']
+            dx = action['right'] - action['left']
+        except KeyError:
+            dz = int(np.sign(action['move']))
+            dx = int(np.sign(action['strafe']))
 
         z, y, x = np.array(obs['grid_arr'].shape, dtype=int) // 2
 

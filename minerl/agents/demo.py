@@ -6,7 +6,7 @@ from fsm_agent import DoneTimer, FSMAgent
 from roomba_agent import RoombaAgent
 from search_agent import SearchAgent, ExploringSearchAgent
 from move_to_neighboring_item_agent import MoveToItemInNeighborhood
-from minerl.env.wrappers import GridWorldWrapper, VideoWrapper
+from minerl.env.wrappers import GridWorldWrapper, VideoWrapper, DiscretePositionWrapper
 from utils import run_single_episode, fill_in_xml
 from algorithms import Planner
 from minerl.env.grid2denv import Grid2DEnv
@@ -1093,6 +1093,131 @@ def crafting_table_test():
 
     run_single_episode(env, agent)
 
+def craft_foraging_test():
+    seed = 3
+    np.random.seed(seed)
+    random.seed(seed)
+    max_episode_steps = 250
+    grid_mins = (-2, -2, -2)
+    grid_maxs = (2, 2, 2)
+    viewpoint = 0
+
+    env = gym.make('MineRLForaging-v0')
+    # env = GridWorldWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
+    env = DiscretePositionWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
+    env = TimeLimit(env, max_episode_steps)
+    env = VideoWrapper(env, 'imgs/craft_foraging_test.gif', fps=30)
+
+    env.unwrapped.xml_file = fill_in_xml(env.xml_file, {
+        'GRID_MIN_X' : grid_mins[2],
+        'GRID_MIN_Y' : grid_mins[1],
+        'GRID_MIN_Z' : grid_mins[0],
+        'GRID_MAX_X' : grid_maxs[2],
+        'GRID_MAX_Y' : grid_maxs[1],
+        'GRID_MAX_Z' : grid_maxs[0],
+        'VIEWPOINT' : viewpoint,
+    })
+
+    env.seed(seed)
+
+    agent0 = RandomAgent(env.action_space) #RoombaAgent(env.action_space)
+    agent0 = AlwaysJumpingAgent(agent0)
+    agent0 = SafeAgentWrapper(agent0)
+
+    pondering_positions = set()
+
+    def done0(obs):
+        if tuple(obs['position']) in pondering_positions:
+            return False
+
+        done = np.any(
+            (obs['grid_arr'][:, 2] == 'log') & \
+            (obs['grid_arr'][:, 3] == 'log') & \
+            (obs['grid_arr'][:, 4] == 'log')
+        )
+        # if done:
+        #     import pdb; pdb.set_trace()
+        return done
+
+    agent1 = MoveToItemInNeighborhood(env.action_space, 'log', delta=(1, 0))
+    agent1 = AlwaysJumpingAgent(agent1)
+    agent1 = SafeAgentWrapper(agent1)
+
+    def done1(obs):
+        if tuple(obs['position']) in pondering_positions:
+            return True
+
+        return not done0(obs) or \
+            (obs['grid_arr'][1, 2, 2] == obs['grid_arr'][1, 3, 2] == obs['grid_arr'][1, 4, 2] == 'log')
+
+    done1 = DoneTimer(10, finish_fn=done1)
+
+    attack_action = env.action_space.no_op()
+    attack_action['attack'] = 1
+    agent2 = SequentialAgent(env.action_space, [], final_action=attack_action)
+
+    def done2(obs):
+        pondering_positions.add(tuple(obs['position']))
+        return False
+
+    done2 = DoneTimer(5, finish_fn=done2)
+
+    # action_strs = ['left', 'forward', 'forward', 'right', 'right', 'back', 'back', 'left']
+    # action_sequence = []
+    # for action_str in action_strs:
+    #     action = env.action_space.no_op()
+    #     action[action_str] = 1
+    #     action_sequence.append(action)
+
+    action_sequence = [env.action_space.no_op() for _ in range(8)]
+    action_sequence[0]['strafe'] = 1
+    action_sequence[1]['move'] = 1
+    action_sequence[2]['move'] = 1
+    action_sequence[3]['strafe'] = -1
+    action_sequence[4]['strafe'] = -1
+    action_sequence[5]['move'] = -1
+    action_sequence[6]['move'] = -1
+    action_sequence[7]['strafe'] = 1
+
+    agent3 = SequentialAgent(env.action_space, action_sequence)
+    agent3 = SafeAgentWrapper(agent3)
+    agent3 = AlwaysJumpingAgent(agent3)
+    done3 = DoneTimer(len(action_sequence))
+
+    action_sequence = [env.action_space.no_op() for _ in range(15)]
+    action_sequence[0]['craft'] = 'planks'
+    action_sequence[1]['craft'] = 'planks'
+    action_sequence[2]['craft'] = 'planks'
+    action_sequence[3]['craft'] = 'stick'
+    action_sequence[4]['craft'] = 'crafting_table'
+    action_sequence[5]['camera'] = np.array([45.0, 0.0], dtype=np.float32)
+    action_sequence[6]['place'] = 'crafting_table'
+    action_sequence[7]['camera'] = np.array([-45.0, 0.0], dtype=np.float32)
+    action_sequence[8]['nearbyCraft'] = 'wooden_pickaxe'
+    action_sequence[9]['equip'] = 'wooden_pickaxe'
+    action_sequence[10]['attack'] = 1
+    action_sequence[11]['attack'] = 1
+    action_sequence[12]['attack'] = 1
+    action_sequence[13]['attack'] = 1
+    action_sequence[14]['attack'] = 1
+
+    def done4(obs):
+        return obs['inventory']['log'] + obs['inventory']['planks'] + obs['inventory']['stick'] < 3
+
+    agent4 = SequentialAgent(env.action_space, action_sequence)
+    done4 = DoneTimer(len(action_sequence), done4)
+
+    agent = FSMAgent([(agent0, done0), (agent1, done1), (agent2, done2), (agent3, done3), (agent4, done4)], repeat=True)
+
+    agent = GridBuildingAgentWrapper(agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
+
+    def inner_fn(obs):
+        print("inventory:", obs['inventory'])
+
+    agent = AgentObsWrapper(agent, inner_fn)
+
+    run_single_episode(env, agent)
+
 
 if __name__ == "__main__":
     # flatworld_demo()
@@ -1116,5 +1241,6 @@ if __name__ == "__main__":
     # wood_unit_test()
     # wood_unit_test2()
     # wood_foraging_test()
-    crafting_table_test()
+    # crafting_table_test()
+    craft_foraging_test()
 
