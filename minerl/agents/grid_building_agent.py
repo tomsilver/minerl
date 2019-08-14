@@ -105,7 +105,7 @@ def build_full_grid(pos_to_ore, max_bounds=None):
     return full_grid
 
 
-grid_colors = {'leaves': (50, 200, 50), 'dirt': (210, 105, 30), 'stone': (100, 100, 100), 'grass': (0, 255, 0), 'unk': (0, 0, 0), 'air': (255, 255, 255), 'tallgrass': (100, 250, 100), 'brown_mushroom': (128, 0, 128), 'double_plant': (123, 200, 75), 'log': (200, 160, 20), 'log2' : (210, 140, 20), 'deadbush': (100, 80, 10), 'water' : (0,0,255), 'sand' : (210,180,140), 'gravel' : (40,40,40), 'clay' : (46,52,60), 'yellow_flower' : (255, 255, 0), 'red_flower' : (255, 0, 0), 'diamond_block' : (185, 242, 255), 'glass' : (255, 185, 242), 'lava' : (207, 16, 32), 'coal_ore'  : (44,44,44), 'cobblestone' : (130,130,130), 'snow_layer' : (240,240,240)}
+grid_colors = {'leaves': (50, 200, 50), 'dirt': (210, 105, 30), 'stone': (100, 100, 100), 'grass': (0, 255, 0), 'unk': (0, 0, 0), 'air': (255, 255, 255), 'tallgrass': (100, 250, 100), 'brown_mushroom': (128, 0, 128), 'double_plant': (123, 200, 75), 'log': (200, 160, 20), 'log2' : (210, 140, 20), 'deadbush': (100, 80, 10), 'water' : (0,0,255), 'sand' : (210,180,140),  'sandstone' : (210,180,140), 'gravel' : (40,40,40), 'clay' : (46,52,60), 'yellow_flower' : (255, 255, 0), 'red_flower' : (255, 0, 0), 'diamond_block' : (185, 242, 255), 'glass' : (255, 185, 242), 'lava' : (207, 16, 32), 'coal_ore'  : (44,44,44), 'cobblestone' : (130,130,130), 'snow_layer' : (240,240,240), 'hardened_clay' : (250,130,0), 'stained_hardened_clay' : (250,130,0)}
 def draw_vertical_plane(grid, outfile):
     plane_img = np.zeros((grid.shape[0], grid.shape[1], 3), dtype=np.uint8)
 

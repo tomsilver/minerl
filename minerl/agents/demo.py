@@ -688,8 +688,7 @@ def bumpy_room_test(agent_type='exploring'):
 
     run_single_episode(env, final_agent)
 
-def forage_explore(agent_type='random'):
-    seed = 20
+def forage_explore(agent_type='random', seed=4):
     np.random.seed(seed)
     random.seed(seed)
 
@@ -851,7 +850,47 @@ def grid_2d_env_test():
 
     run_single_episode(env, agent, verbose=True)
 
+def wood_unit_test():
+    seed = 1
+    np.random.seed(seed)
+    random.seed(seed)
+    max_episode_steps = 20
+    grid_mins = (-2, -1, -2)
+    grid_maxs = (2, -1, 2)
+    viewpoint = 1
 
+    env = gym.make('MineRLWoodUnitTest-v0')
+    env = GridWorldWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
+    env = TimeLimit(env, max_episode_steps)
+    env = VideoWrapper(env, 'imgs/wood_unit_test.gif', fps=10)
+
+    env.unwrapped.xml_file = fill_in_xml(env.xml_file, {
+        'GRID_MIN_X' : grid_mins[2],
+        'GRID_MIN_Y' : grid_mins[1],
+        'GRID_MIN_Z' : grid_mins[0],
+        'GRID_MAX_X' : grid_maxs[2],
+        'GRID_MAX_Y' : grid_maxs[1],
+        'GRID_MAX_Z' : grid_maxs[0],
+        'VIEWPOINT' : viewpoint,
+    })
+
+    env.seed(seed)
+
+    action_strs = ['forward'] * 5 + ['attack'] * 5
+    action_sequence = []
+    for action_str in action_strs:
+        action = env.action_space.no_op()
+        action[action_str] = 1
+        action_sequence.append(action)
+    final_action = env.action_space.no_op()
+
+    action_sequence[10]['crouch'] = 1
+    action_sequence[10]['attack'] = 1
+
+    agent = SequentialAgent(env.action_space, action_sequence, final_action=final_action)
+    agent = GridBuildingAgentWrapper(agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
+
+    run_single_episode(env, agent)
 
 
 
@@ -864,14 +903,15 @@ if __name__ == "__main__":
     # safety_unit_test2()
     # safety_unit_test3()
     # foraging_test()
-    visualize_3d_from_pkl('foraging_exploring_pos_to_ore.pkl')
+    # visualize_3d_from_pkl('foraging_exploring_pos_to_ore.pkl')
     # fsm_maze_test()
     # pure_search_test()
     # search_maze_test()
     # search_ascending_maze_test()
-    # open_room_test(agent_type='exploring')
+    # open_room_test(agent_type='roomba')
     # bumpy_room_test(agent_type='exploring')
-    # forage_explore(agent_type='exploring')
+    # forage_explore(agent_type='exploring', seed=24)
     # visualize_3d_test()
     # grid_2d_env_test()
+    wood_unit_test()
 

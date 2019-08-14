@@ -500,6 +500,7 @@ contributed_env_infos = [
     ('MineRLAscendingMazeTest-v0', 'ascending_maze_test.xml'),
     ('MineRLOpenRoomTest-v0', 'open_room_test.xml'),
     ('MineRLBumpyRoomTest-v0', 'bumpy_room_test.xml'),
+    ('MineRLWoodUnitTest-v0', 'wood_unit_test.xml'),
 ]
 
 for env_id, xml in contributed_env_infos:
@@ -527,6 +528,8 @@ for env_id, xml in contributed_env_infos:
                 "move" : spaces.Box(low=-1, high=1, shape=(1,), dtype=np.float32),
                 "strafe" : spaces.Box(low=-1, high=1, shape=(1,), dtype=np.float32),
                 "jump" : spaces.Discrete(2),
+                "attack" : spaces.Discrete(2),
+                "crouch": spaces.Discrete(2),
             }),
             'docstr': """TODO"""
         },

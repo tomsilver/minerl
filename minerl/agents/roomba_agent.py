@@ -4,11 +4,13 @@ import numpy as np
 
 class RoombaAgent(Agent):
     rng = np.random.RandomState(0)
+    prob_change = 0.1
     stuck_threshold = 3
 
     def reset_direction(self):
         self.direction = ['forward', 'back', 'left', 'right'][self.rng.choice(4)]
         print("reset direction to", self.direction)
+        self.stuck_count_down = self.stuck_threshold
 
     def reset(self, obs):
         self.reset_direction()
@@ -17,7 +19,11 @@ class RoombaAgent(Agent):
         return super().reset(obs)
 
     def __call__(self, obs):
-        if np.all(obs['position'] == self.last_position):
+
+        if self.rng.random() < self.prob_change:
+            self.reset_direction()
+
+        elif np.all(obs['position'] == self.last_position):
             if self.stuck_count_down <= 0:
                 self.reset_direction()
             else:

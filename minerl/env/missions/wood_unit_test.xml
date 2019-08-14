@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<Mission xmlns="http://ProjectMalmo.microsoft.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <About>
+        <Summary>$(ENV_NAME)</Summary>
+    </About>
+
+    <ModSettings>
+        <MsPerTick>50</MsPerTick>
+    </ModSettings>
+
+    <ServerSection>
+        <ServerInitialConditions>
+            <Time>
+                <StartTime>6000</StartTime>
+                <AllowPassageOfTime>false</AllowPassageOfTime>
+            </Time>
+            <Weather>clear</Weather>
+            <AllowSpawning>false</AllowSpawning>
+        </ServerInitialConditions>
+        <ServerHandlers>
+            <FlatWorldGenerator generatorString="3;22,4,13;1;village"/>
+            <DrawingDecorator>
+                <DrawCuboid type="log" x1="0" x2="0" y1="3" y2="6" z1="3" z2="3"/>
+            </DrawingDecorator>
+            <ServerQuitFromTimeUp timeLimitMs="300000" description="out_of_time"/>
+            <ServerQuitWhenAnyAgentFinishes/>
+        </ServerHandlers>
+    </ServerSection>
+    <AgentSection mode="Survival">
+        <Name>MineRLAgent</Name>
+        <AgentStart>
+            <Placement x="0.5" y="3" z="0.5" pitch="0" yaw="0"/>
+        </AgentStart>
+        <AgentHandlers>
+            <VideoProducer want_depth="false" viewpoint="$(VIEWPOINT)">
+                <Width>256</Width>
+                <Height>256</Height>
+            </VideoProducer>
+            <FileBasedPerformanceProducer/>
+            <ObservationFromFullInventory flat="false"/>
+            <ObservationFromFullStats/>
+            <ContinuousMovementCommands/>
+            <CameraCommands/>
+            <ObservationFromGrid>
+               <Grid name="grid">
+                  <min x="$(GRID_MIN_X)" y="$(GRID_MIN_Y)" z="$(GRID_MIN_Z)" />
+                  <max x="$(GRID_MAX_X)" y="$(GRID_MAX_Y)" z="$(GRID_MAX_Z)" />
+               </Grid>
+            </ObservationFromGrid>
+
+        </AgentHandlers>
+    </AgentSection>
+</Mission>
