@@ -979,30 +979,43 @@ def wood_foraging_test():
     agent0 = AlwaysJumpingAgent(agent0)
     agent0 = SafeAgentWrapper(agent0)
 
+    pondering_positions = set()
+
     def done0(obs):
+        if tuple(obs['position']) in pondering_positions:
+            return False
+
         done = np.any(
             (obs['grid_arr'][:, 2] == 'log') & \
             (obs['grid_arr'][:, 3] == 'log') & \
             (obs['grid_arr'][:, 4] == 'log')
         )
-        if done:
-            import pdb; pdb.set_trace()
+        # if done:
+        #     import pdb; pdb.set_trace()
         return done
 
-    agent1 = MoveToItemInNeighborhood(env.action_space, 'log', delta=(1, 0, 0))
+    agent1 = MoveToItemInNeighborhood(env.action_space, 'log', delta=(1, 0))
     agent1 = AlwaysJumpingAgent(agent1)
     agent1 = SafeAgentWrapper(agent1)
 
     def done1(obs):
-        in_front_above = obs['grid_arr'][1, 3, 2]
-        return in_front_above == 'log'
+        if tuple(obs['position']) in pondering_positions:
+            return True
+
+        return not done0(obs) or \
+            (obs['grid_arr'][1, 2, 2] == obs['grid_arr'][1, 3, 2] == obs['grid_arr'][1, 4, 2] == 'log')
 
     done1 = DoneTimer(10, finish_fn=done1)
 
     attack_action = env.action_space.no_op()
     attack_action['attack'] = 1
     agent2 = SequentialAgent(env.action_space, [], final_action=attack_action)
-    done2 = DoneTimer(5)
+
+    def done2(obs):
+        pondering_positions.add(tuple(obs['position']))
+        return False
+
+    done2 = DoneTimer(5, finish_fn=done2)
 
     agent = FSMAgent([(agent0, done0), (agent1, done1), (agent2, done2)], repeat=True)
 

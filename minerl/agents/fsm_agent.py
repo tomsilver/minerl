@@ -12,12 +12,13 @@ class FSMAgent(Agent):
         print("fsm state:", self.current_state_idx)
 
         agent, done_fn = self.states[self.current_state_idx]
-        action = agent(obs)
         done = done_fn(obs)
 
         if done:
             self.current_state_idx += 1
             return self.__call__(obs)
+
+        action = agent(obs)
 
         return action
 
