@@ -29,8 +29,8 @@
         </AgentStart>
         <AgentHandlers>
             <VideoProducer want_depth="false" viewpoint="$(VIEWPOINT)">
-                <Width>256</Width>
-                <Height>256</Height>
+                <Width>64</Width>
+                <Height>64</Height>
             </VideoProducer>
             
             <FileBasedPerformanceProducer/>

@@ -1094,19 +1094,19 @@ def crafting_table_test():
     run_single_episode(env, agent)
 
 def craft_foraging_test():
-    seed = 3
+    seed = 20
     np.random.seed(seed)
     random.seed(seed)
-    max_episode_steps = 250
+    max_episode_steps = 2500
     grid_mins = (-2, -2, -2)
     grid_maxs = (2, 2, 2)
-    viewpoint = 0
+    viewpoint = 1
 
     env = gym.make('MineRLForaging-v0')
-    # env = GridWorldWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
-    env = DiscretePositionWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
+    env = GridWorldWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
+    # env = DiscretePositionWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
     env = TimeLimit(env, max_episode_steps)
-    env = VideoWrapper(env, 'imgs/craft_foraging_test.gif', fps=30)
+    env = VideoWrapper(env, 'imgs/craft_foraging_test.gif', fps=5)
 
     env.unwrapped.xml_file = fill_in_xml(env.xml_file, {
         'GRID_MIN_X' : grid_mins[2],
@@ -1120,7 +1120,7 @@ def craft_foraging_test():
 
     env.seed(seed)
 
-    agent0 = RandomAgent(env.action_space) #RoombaAgent(env.action_space)
+    agent0 = RoombaAgent(env.action_space)
     agent0 = AlwaysJumpingAgent(agent0)
     agent0 = SafeAgentWrapper(agent0)
 
@@ -1162,50 +1162,40 @@ def craft_foraging_test():
 
     done2 = DoneTimer(5, finish_fn=done2)
 
-    # action_strs = ['left', 'forward', 'forward', 'right', 'right', 'back', 'back', 'left']
-    # action_sequence = []
-    # for action_str in action_strs:
-    #     action = env.action_space.no_op()
-    #     action[action_str] = 1
-    #     action_sequence.append(action)
-
-    action_sequence = [env.action_space.no_op() for _ in range(8)]
-    action_sequence[0]['strafe'] = 1
-    action_sequence[1]['move'] = 1
-    action_sequence[2]['move'] = 1
-    action_sequence[3]['strafe'] = -1
-    action_sequence[4]['strafe'] = -1
-    action_sequence[5]['move'] = -1
-    action_sequence[6]['move'] = -1
-    action_sequence[7]['strafe'] = 1
+    action_strs = ['left', 'forward', 'forward', 'right', 'right', 'back', 'back', 'left']
+    action_sequence = []
+    for action_str in action_strs:
+        action = env.action_space.no_op()
+        action[action_str] = 1
+        action_sequence.append(action)
 
     agent3 = SequentialAgent(env.action_space, action_sequence)
     agent3 = SafeAgentWrapper(agent3)
     agent3 = AlwaysJumpingAgent(agent3)
     done3 = DoneTimer(len(action_sequence))
 
-    action_sequence = [env.action_space.no_op() for _ in range(15)]
-    action_sequence[0]['craft'] = 'planks'
-    action_sequence[1]['craft'] = 'planks'
-    action_sequence[2]['craft'] = 'planks'
-    action_sequence[3]['craft'] = 'stick'
-    action_sequence[4]['craft'] = 'crafting_table'
-    action_sequence[5]['camera'] = np.array([45.0, 0.0], dtype=np.float32)
-    action_sequence[6]['place'] = 'crafting_table'
-    action_sequence[7]['camera'] = np.array([-45.0, 0.0], dtype=np.float32)
-    action_sequence[8]['nearbyCraft'] = 'wooden_pickaxe'
-    action_sequence[9]['equip'] = 'wooden_pickaxe'
-    action_sequence[10]['attack'] = 1
-    action_sequence[11]['attack'] = 1
-    action_sequence[12]['attack'] = 1
-    action_sequence[13]['attack'] = 1
-    action_sequence[14]['attack'] = 1
+    action_sequence2 = [env.action_space.no_op() for _ in range(15)]
+    action_sequence2[0]['craft'] = 'planks'
+    action_sequence2[1]['craft'] = 'planks'
+    action_sequence2[2]['craft'] = 'planks'
+    action_sequence2[3]['craft'] = 'stick'
+    action_sequence2[4]['craft'] = 'crafting_table'
+    action_sequence2[5]['camera'] = np.array([45.0, 0.0], dtype=np.float32)
+    action_sequence2[6]['place'] = 'crafting_table'
+    action_sequence2[7]['camera'] = np.array([-45.0, 0.0], dtype=np.float32)
+    action_sequence2[8]['nearbyCraft'] = 'wooden_pickaxe'
+    action_sequence2[9]['equip'] = 'wooden_pickaxe'
+    action_sequence2[10]['attack'] = 1
+    action_sequence2[11]['attack'] = 1
+    action_sequence2[12]['attack'] = 1
+    action_sequence2[13]['attack'] = 1
+    action_sequence2[14]['attack'] = 1
 
     def done4(obs):
         return obs['inventory']['log'] + obs['inventory']['planks'] + obs['inventory']['stick'] < 3
 
-    agent4 = SequentialAgent(env.action_space, action_sequence)
-    done4 = DoneTimer(len(action_sequence), done4)
+    agent4 = SequentialAgent(env.action_space, action_sequence2)
+    done4 = DoneTimer(len(action_sequence2), done4)
 
     agent = FSMAgent([(agent0, done0), (agent1, done1), (agent2, done2), (agent3, done3), (agent4, done4)], repeat=True)
 
@@ -1218,6 +1208,49 @@ def craft_foraging_test():
 
     run_single_episode(env, agent)
 
+def leveling_demo():
+    seed = 1
+    np.random.seed(seed)
+    random.seed(seed)
+
+    grid_mins = (-1, -1, -1)
+    grid_maxs = (1, 1, 1)
+    viewpoint = 1
+    max_episode_steps = 100
+
+    env = gym.make('MineRLLeveling-v0')
+    env = GridWorldWrapper(env, grid_mins=grid_mins, grid_maxs=grid_maxs)
+    env = TimeLimit(env, max_episode_steps)
+    env = VideoWrapper(env, 'imgs/leveling_demo.gif', fps=3)
+
+    env.unwrapped.xml_file = fill_in_xml(env.xml_file, {
+        'GRID_MIN_X' : grid_mins[2],
+        'GRID_MIN_Y' : grid_mins[1],
+        'GRID_MIN_Z' : grid_mins[0],
+        'GRID_MAX_X' : grid_maxs[2],
+        'GRID_MAX_Y' : grid_maxs[1],
+        'GRID_MAX_Z' : grid_maxs[0],
+        'VIEWPOINT' : viewpoint,
+    })
+
+    env.seed(seed)
+
+    action_sequence2 = [env.action_space.no_op() for _ in range(15)]
+    action_sequence2[0]['forward'] = 1
+    action_sequence2[1]['forward'] = 1
+    action_sequence2[2]['attack'] = 1
+    action_sequence2[3]['attack'] = 1
+    action_sequence2[4]['attack'] = 1
+
+    agent = SequentialAgent(env.action_space, action_sequence2)
+    # agent = RandomAgent(env.action_space)
+    # agent = AlwaysJumpingAgent(agent)
+    agent = GridBuildingAgentWrapper(agent, grid_mins=grid_mins, grid_maxs=grid_maxs)
+
+    time_counter = itertools.count()
+    filenames = []
+
+    run_single_episode(env, agent)
 
 if __name__ == "__main__":
     # flatworld_demo()
@@ -1242,5 +1275,6 @@ if __name__ == "__main__":
     # wood_unit_test2()
     # wood_foraging_test()
     # crafting_table_test()
-    craft_foraging_test()
+    # craft_foraging_test()
+    leveling_demo()
 

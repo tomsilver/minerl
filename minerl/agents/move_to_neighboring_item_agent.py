@@ -31,23 +31,17 @@ class MoveToItemInNeighborhood(Agent):
         action = self.action_space.no_op()
 
         if target_movement[0] < 0:
-            # action['forward'] = 1
-            action['move'] = 1
+            action['forward'] = 1
         elif target_movement[1] == 0 and target_movement[0] > 0:
             if self.rng.random() > 0.5:
-                # action['left'] = 1
-                action['strafe'] = 1
+                action['left'] = 1
             else:
-                # action['right'] = 1
-                action['strafe'] = -1
+                action['right'] = 1
         elif target_movement[0] > 0:
-            # action['back'] = 1
-            action['move'] = -1
+            action['back'] = 1
         elif target_movement[1] < 0:
-            # action['left'] = 1
-            action['strafe'] = 1
+            action['left'] = 1
         elif target_movement[1] > 0:
-            # action['right'] = 1
-            action['strafe'] = -1
+            action['right'] = 1
 
         return action

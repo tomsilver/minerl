@@ -503,6 +503,7 @@ contributed_env_infos = [
     ('MineRLWoodUnitTest-v0', 'wood_unit_test.xml'),
     ('MineRLWoodUnitTest2-v0', 'wood_unit_test2.xml'),
     ('MineRLCraftingTableTest-v0', 'crafting_table_test.xml'),
+    ('MineRLLeveling-v0', 'leveling.xml'),
 ]
 
 for env_id, xml in contributed_env_infos:

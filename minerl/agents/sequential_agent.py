@@ -20,6 +20,8 @@ class SequentialAgent(Agent):
             raise Exception("Action sequence expired")
 
         action = self.action_sequence[self.action_idx]
+        # print("self.action_idx:", self.action_idx)
+        # print("action in acction sequencce:", action)
         self.action_idx += 1
 
         return action

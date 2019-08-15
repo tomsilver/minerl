@@ -33,6 +33,12 @@ class GridWorldWrapper(gym.Wrapper):
             "right": spaces.Discrete(2),
             "jump": spaces.Discrete(2),
             "attack": spaces.Discrete(2),
+            "camera": spaces.Box(low=-180, high=180, shape=(2,), dtype=np.float32),
+            "place": spaces.Enum('none', 'dirt', 'log', 'stone', 'cobblestone', 'crafting_table', 'furnace', 'torch'),
+            "equip": spaces.Enum('none', 'air', 'wooden_axe', 'wooden_pickaxe', 'stone_axe', 'stone_pickaxe', 'iron_axe', 'iron_pickaxe'),
+            "craft": spaces.Enum('none', 'torch', 'stick', 'planks', 'crafting_table'),
+            "nearbyCraft": spaces.Enum('none', 'wooden_axe', 'wooden_pickaxe', 'stone_axe', 'stone_pickaxe', 'iron_axe', 'iron_pickaxe', 'furnace'),
+            "nearbySmelt": spaces.Enum('none', 'iron_ingot', 'coal')
         })
 
     def step_in_env(self, action):
@@ -79,6 +85,23 @@ class GridWorldWrapper(gym.Wrapper):
             jump_action = self.env.action_space.no_op()
             jump_action['jump'] = 1
             self.step_in_env(jump_action)
+
+        if "forward" not in action or not any([action["forward"], action["back"], action["left"], action["right"], action["attack"]]):
+            try:
+                del action["forward"]
+                del action["back"]
+                del action["left"]
+                del action["right"]
+            except KeyError:
+                pass
+            # print("taking action", action)
+            # import pdb; pdb.set_trace()
+            obs, reward, done, debug_info = self.step_in_env(action)
+            self.position = np.array([obs['XPos'], obs['YPos'], obs['ZPos']])
+            obs['position'] = self.discretize_position(self.position)
+            obs['grid_arr'] = self.grid_to_array(obs['grid'])
+
+            return obs, reward, done, debug_info
 
         self.attacking = action['attack']
 
