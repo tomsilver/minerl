@@ -25,8 +25,8 @@ class MinecraftChase(MineRLEnv):
         self.grid_maxs = (self.layout.shape[0] - 1, 1, self.layout.shape[1] - 1)
 
         self.agent_start = (self.layout.shape[1] // 2, -4)
-        sheep_r, sheep_c = np.argwhere(self.layout == 'sheep')[0]
-        sheep_z, sheep_x = self.layout.shape[0] - sheep_r - 1, self.layout.shape[1] - sheep_c - 1
+        self.sheep_r, self.sheep_c = np.argwhere(self.layout == 'sheep')[0]
+        sheep_z, sheep_x = self.layout.shape[0] - self.sheep_r - 1, self.layout.shape[1] - self.sheep_c - 1
         self.sheep_start = (sheep_x, sheep_z)
 
         xml = self.create_xml_file()
@@ -123,13 +123,14 @@ class MinecraftChase(MineRLEnv):
         assert len(arr.shape) == 2
 
         arr[arr == 'air'] = None
+        arr[self.sheep_r, self.sheep_c] = 'sheep'
 
         return arr
 
     def get_done(self, obs):
         sheep_r, sheep_c = np.argwhere(obs=='sheep')[0]
         mask = (obs == 'fence').astype(np.uint8)
-        components = cv2.connectedComponents(mask)
+        _, components = cv2.connectedComponents(mask)
         sheep_component = components[sheep_r, sheep_c]
 
         if np.any(components[0] == sheep_component):
@@ -314,6 +315,8 @@ layout2 = [
 def policy(obs):
     sheep_r, sheep_c = np.argwhere(obs == 'sheep')[0]
     for r in range(1, obs.shape[0]):
+        if r <= sheep_r:
+            continue
         for c in range(1, obs.shape[1]-1):
             if obs[r, c-1] == 'fence' and obs[r, c] == 'fence' and obs[r, c+1] == None:
                 if np.all(obs[sheep_r+1:r-1, sheep_c+1:c-1] == None):
@@ -328,11 +331,12 @@ def demo():
 
     obs = env.reset()
 
-    done = False
 
-    while not done:
+    for _ in range(50):
         action = policy(obs)
         obs, reward, done, debug_info = env.step(action)
+        if done:
+            break
 
     env.close()
 
