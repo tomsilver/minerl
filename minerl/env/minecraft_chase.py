@@ -380,8 +380,53 @@ layout3 = [
     ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
     ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
     ['fence', 'fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence', 'fence'],
-
 ]
+
+layout4 = [
+    ['fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'fence'],
+    ['fence', 'sheep', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'fence', 'fence', 'fence', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'fence', 'fence', 'fence', 'xxxxx', 'xxxxx', 'fence', 'fence'],
+]
+
+layout5 = [
+    ['fence', 'fence', 'fence', 'fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'sheep', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'fence', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx'],
+    ['xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx'],
+    ['xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx'],
+    ['fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
+    ['fence', 'fence', 'xxxxx', 'xxxxx', 'fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx'],
+]
+
+
+LAYOUTS = OrderedDict([(0, layout0), (1, layout1), (2, layout2), (3, layout3), (4, layout4), (5, layout5)])
 
 # def policy(obs):
 #     sheep_r, sheep_c = np.argwhere(obs == 'sheep')[0]
@@ -404,9 +449,9 @@ def policy(obs):
         for c in range(1, obs.shape[1]-1):
             if obs[r, c-1] == 'fence' and obs[r, c] == 'fence' and obs[r, c+1] == None:
                 if sheep_c <= c:
-                    if np.all(obs[sheep_r+1:r-1, sheep_c:c] == None):
+                    if np.all(obs[sheep_r+1:r, sheep_c:c] == None):
                         return (r, c+1)
-                if np.all(obs[sheep_r+1:r-1, c:sheep_c] == None):
+                elif np.all(obs[sheep_r+1:r, c:sheep_c] == None):
                     return (r, c+1)
 
     print("Policy returning (0, 0)!")
@@ -414,9 +459,8 @@ def policy(obs):
 
 
 def demo():
-    layouts = OrderedDict([(0, layout0), (1, layout1), (2, layout2), (3, layout3)])
 
-    for i, layout in layouts.items():
+    for i, layout in LAYOUTS.items():
         env = MiniMinecraftChase(layout, render_inner=True, video_outfile='MinecraftChase_demo_{}.gif'.format(i), fps=20)
         obs = env.reset()
 
