@@ -28,7 +28,7 @@ class MinecraftEnclose(MineRLEnv):
 
         self.agent_start = (self.layout.shape[1] // 2, -4)
         self.sheep_r, self.sheep_c = np.argwhere(self.layout == 'sheep')[0]
-        sheep_z, sheep_x = self.layout.shape[0] - self.sheep_r, self.layout.shape[1] - self.sheep_c - 1
+        sheep_z, sheep_x = self.layout.shape[0] - self.sheep_r + 1, self.layout.shape[1] - self.sheep_c - 1
         self.sheep_start = (sheep_x, sheep_z)
 
         xml = self.create_xml_file()
@@ -64,14 +64,14 @@ class MinecraftEnclose(MineRLEnv):
         obs, reward, done, debug_info = self._step({})
 
         # Check that the target pos is empty
-        if obs[action[0], action[1]] != None or action[0] == 0:
-            logging.debug("Return 1")
+        if obs[action[0], action[1]] != None or action[0] == self.layout.shape[0]-1:
+            logging.info("Return 1")
             # import pdb; pdb.set_trace()
             return obs, reward, done, debug_info
 
         # Check that the target+1 pos is empty
-        if obs[action[0]-1, action[1]] != None:
-            logging.debug("Return 2")
+        if obs[action[0]+1, action[1]] != None:
+            logging.info("Return 2")
             return obs, reward, done, debug_info
 
         # Go to the target+1 pos
@@ -81,7 +81,7 @@ class MinecraftEnclose(MineRLEnv):
             'tpz' : self.layout.shape[0] - action[0] - 1.5,
         }
 
-        logging.debug("Taking move action")
+        logging.info("Taking move action")
         obs, reward, done, debug_info = self._step(move_action)
 
         # Let env settle
@@ -89,7 +89,7 @@ class MinecraftEnclose(MineRLEnv):
             obs, reward, done, debug_info = self._step({})
 
         # Try to build the fence
-        logging.debug("Trying to build fence")
+        logging.info("Trying to build fence")
 
         build_action = {'place' : 'fence'}
         fence_count = np.sum(obs == 'fence')
@@ -103,7 +103,7 @@ class MinecraftEnclose(MineRLEnv):
                 obs, reward, done, debug_info = self._step({})
 
         if np.sum(obs == 'fence') == fence_count:
-            logging.debug("Failed to build fence")
+            logging.info("Failed to build fence")
             import pdb; pdb.set_trace()
 
         return obs, reward, done, debug_info
