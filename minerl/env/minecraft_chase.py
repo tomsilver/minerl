@@ -129,7 +129,8 @@ class MinecraftChase(MineRLEnv):
 
         return arr
 
-    def get_done(self, obs):
+    @staticmethod
+    def get_done(obs):
         sheep_r, sheep_c = np.argwhere(obs=='sheep')[0]
         mask = (obs == 'fence').astype(np.uint8)
         components = skimage.measure.label(mask, background=2, return_num=False)
@@ -263,6 +264,54 @@ class MinecraftChase(MineRLEnv):
             print("Wrote out video to {}.".format(self.video_outfile))
         return super().close()
 
+class MiniMinecraftChase(gym.Env):
+
+    def __init__(self, layout, render_inner=False, video_outfile='out.mp4', fps=20, *args, **kwargs):
+        self.layout = np.array(layout, dtype=object)
+        self.layout[self.layout == 'xxxxx'] = None
+        self.initial_layout = self.layout.copy()
+        self.render_inner = render_inner
+        self.video_outfile = video_outfile
+        self.fps = fps
+        self.inner_images = []
+
+        super().__init__(*args, **kwargs)
+
+    def get_image(self):
+        arr = 255 * np.ones((self.layout.shape[0], self.layout.shape[1], 3), dtype=np.uint8)
+        arr[self.layout == 'fence'] = (165,42,42)
+        arr[self.layout == 'sheep'] = (10, 240, 10)
+        return arr
+
+    def reset(self):
+        self.layout = self.initial_layout.copy()
+        if self.render_inner:
+            self.inner_images.append(self.render())
+        return self.layout.copy()
+
+    def step(self, action):
+        self.layout[action[0], action[1]] = 'fence'
+
+        done = MinecraftChase.get_done(self.layout)
+        reward = float(done)
+        debug_info = {}
+
+        if self.render_inner:
+            self.inner_images.append(self.render())
+
+        return self.layout.copy(), reward, done, debug_info
+
+    def render(self, mode='rgb_array'):
+        return self.get_image()
+
+    def close(self):
+        if self.render_inner:
+            imageio.mimsave(self.video_outfile, self.inner_images, fps=self.fps)
+            print("Wrote out video to {}.".format(self.video_outfile))
+        return super().close()
+
+
+
 
 layout0 = [
     ['fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence'],
@@ -366,10 +415,9 @@ def policy(obs):
 
 def demo():
     layouts = OrderedDict([(0, layout0), (1, layout1), (2, layout2), (3, layout3)])
-    # layouts = OrderedDict([(3, layout3)])
 
     for i, layout in layouts.items():
-        env = MinecraftChase(layout, render_inner=True, video_outfile='MinecraftChase_demo_{}.gif'.format(i), fps=20)
+        env = MiniMinecraftChase(layout, render_inner=True, video_outfile='MinecraftChase_demo_{}.gif'.format(i), fps=20)
         obs = env.reset()
 
         for _ in range(50):
