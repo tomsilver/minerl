@@ -15,8 +15,9 @@ logging.basicConfig(level=logging.INFO)
 
 class MinecraftEnclose(MineRLEnv):
 
-    def __init__(self, layout=None, render_inner=False, video_outfile='out.mp4', fps=20, *args, **kwargs):
+    def __init__(self, layout=None, num_fences=0, render_inner=False, video_outfile='out.mp4', fps=20, *args, **kwargs):
         self.layout = np.array(layout, dtype=object)
+        self.num_fences = num_fences
         self.render_inner = render_inner
         self.video_outfile = video_outfile
         self.fps = fps
@@ -51,11 +52,14 @@ class MinecraftEnclose(MineRLEnv):
 
     def reset(self):
         obs = super().reset()
+        self.fenses_used = 0
         if self.render_inner:
             self.inner_images.append(self.render())
         return self.post_process_obs(obs)
 
     def step(self, action):
+        self.fenses_used += 1
+
         # Get a fresh obs
         obs, reward, done, debug_info = self._step({})
 
@@ -110,7 +114,10 @@ class MinecraftEnclose(MineRLEnv):
             self.inner_images.append(self.render())
         obs = self.post_process_obs(obs)
         done = self.get_done(obs)
-        reward = float(done)
+        if done:
+            reward = float(self.fenses_used <= self.num_fences)
+        else:
+            reward = 0.
         return obs, reward, done, debug_info
 
     def post_process_obs(self, obs):
@@ -272,10 +279,11 @@ class MinecraftEnclose(MineRLEnv):
 
 class MiniMinecraftEnclose(gym.Env):
 
-    def __init__(self, layout=None, render_inner=False, video_outfile='out.mp4', fps=20, *args, **kwargs):
+    def __init__(self, layout=None, num_fences=0, render_inner=False, video_outfile='out.mp4', fps=20, *args, **kwargs):
         self.layout = np.array(layout, dtype=object)
         self.layout[self.layout == 'xxxxx'] = None
         self.initial_layout = self.layout.copy()
+        self.num_fences = num_fences
         self.render_inner = render_inner
         self.video_outfile = video_outfile
         self.fps = fps
@@ -290,16 +298,21 @@ class MiniMinecraftEnclose(gym.Env):
         return arr
 
     def reset(self):
+        self.fenses_used = 0
         self.layout = self.initial_layout.copy()
         if self.render_inner:
             self.inner_images.append(self.render())
         return self.layout.copy()
 
     def step(self, action):
+        self.fenses_used += 1
         self.layout[action[0], action[1]] = 'fence'
 
         done = MinecraftEnclose.get_done(self.layout)
-        reward = float(done)
+        if done:
+            reward = float(self.fenses_used <= self.num_fences)
+        else:
+            reward = 0.
         debug_info = {}
 
         if self.render_inner:

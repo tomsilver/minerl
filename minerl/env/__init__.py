@@ -595,6 +595,7 @@ layout0 = [
     ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
     ['fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence', 'fence'],
 ]
+num_fences0 = 4
 
 layout1 = [
     ['fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'xxxxx', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence'],
@@ -607,6 +608,7 @@ layout1 = [
     ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
     ['fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
 ]
+num_fences1 = 3
 
 layout2 = [
     ['fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'xxxxx', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence'],
@@ -619,6 +621,7 @@ layout2 = [
     ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
     ['fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence', 'xxxxx', 'fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
 ]
+num_fences2 = 4
 
 layout3 = [
     ['fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence'],
@@ -644,6 +647,7 @@ layout3 = [
     ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
     ['fence', 'fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence', 'fence'],
 ]
+num_fences3 = 7
 
 layout4 = [
     ['fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence', 'fence'],
@@ -667,6 +671,7 @@ layout4 = [
     ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
     ['fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'fence', 'fence', 'fence', 'xxxxx', 'xxxxx', 'fence', 'fence'],
 ]
+num_fences4 = 4
 
 layout5 = [
     ['fence', 'fence', 'fence', 'fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx'],
@@ -687,6 +692,7 @@ layout5 = [
     ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
     ['fence', 'fence', 'xxxxx', 'xxxxx', 'fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx'],
 ]
+num_fences5 = 4
 
 layout6 = [
     ['fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'xxxxx', 'xxxxx'],
@@ -706,6 +712,7 @@ layout6 = [
     ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
     ['fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
 ]
+num_fences6 = 5
 
 layout7 = [
     ['fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence'],
@@ -725,6 +732,7 @@ layout7 = [
     ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
     ['fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
 ]
+num_fences7 = 5
 
 layout8 = [
     ['fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence'],
@@ -737,6 +745,7 @@ layout8 = [
     ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
     ['fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
 ]
+num_fences8 = 22
 
 layout9 = [
     ['fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence'],
@@ -751,6 +760,7 @@ layout9 = [
     ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
     ['fence', 'fence', 'xxxxx', 'xxxxx', 'fence', 'fence', 'xxxxx', 'xxxxx', 'fence', 'fence', 'xxxxx', 'xxxxx', 'fence', 'fence', 'xxxxx', 'xxxxx', 'fence', 'fence', 'xxxxx', 'xxxxx', 'fence', 'fence', 'xxxxx', 'xxxxx', 'fence'],
 ]
+num_fences9 = 2
 
 layout10 = [
     ['fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence'],
@@ -766,6 +776,7 @@ layout10 = [
     ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
     ['fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence', 'fence'],
 ]
+num_fences10 = 7
 
 layout11 = [
     ['fence', 'fence', 'fence', 'fence', 'fence', 'xxxxx', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence'],
@@ -781,6 +792,7 @@ layout11 = [
     ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
     ['fence', 'fence', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence'],
 ]
+num_fences11 = 2
 
 layout12 = [
     ['fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'xxxxx', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence'],
@@ -793,6 +805,7 @@ layout12 = [
     ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
     ['fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence', 'xxxxx', 'fence', 'fence', 'fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence', 'fence',  'fence'],
 ]
+num_fences12 = 3
 
 layout13 = [
     ['fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence'],
@@ -820,6 +833,7 @@ layout13 = [
     ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
     ['fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
 ]
+num_fences13 = 7
 
 layout14 = [
     ['fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence'],
@@ -843,6 +857,7 @@ layout14 = [
     ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'fence', 'fence'],
     ['fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'fence', 'fence', 'fence'],
 ]
+num_fences14 = 4
 
 layout15 = [
     ['fence', 'fence', 'fence', 'fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx'],
@@ -870,6 +885,7 @@ layout15 = [
     ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx'],
     ['fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx'],
 ]
+num_fences15 = 7
 
 layout16 = [
     ['xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence', 'fence', 'fence', 'fence', 'xxxxx', 'xxxxx'],
@@ -889,6 +905,7 @@ layout16 = [
     ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
     ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
 ]
+num_fences16 = 7
 
 layout17 = [
     ['fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence'],
@@ -911,6 +928,7 @@ layout17 = [
     ['fence', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'fence'],
     ['fence', 'fence', 'fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence', 'fence', 'fence'],
 ]
+num_fences17 = 3
 
 layout18 = [
     ['fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence'],
@@ -925,6 +943,8 @@ layout18 = [
     ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
     ['fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
 ]
+num_fences18 = 21
+
 
 layout19 = [
     ['fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence'],
@@ -939,23 +959,28 @@ layout19 = [
     ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
     ['fence', 'fence', 'xxxxx', 'xxxxx', 'fence', 'fence', 'xxxxx', 'xxxxx', 'fence', 'fence', 'xxxxx', 'xxxxx', 'fence', 'fence', 'xxxxx', 'xxxxx', 'fence', 'fence', 'xxxxx', 'xxxxx', 'fence', 'fence', 'xxxxx', 'xxxxx', 'fence'],
 ]
+num_fences19 = 2
 
-LAYOUTS = OrderedDict([(0, layout0), (1, layout1), (2, layout2), (3, layout3), (4, layout4), (5, layout5), 
-    (6, layout6), (7, layout7), (8, layout8), (9, layout9), (10, layout10), (11, layout11), (12, layout12),
-    (13, layout13), (14, layout14), (15, layout15), (16, layout16), (17, layout17), (18, layout18), (19, layout19)])
+
+LAYOUTS = [(0, layout0, num_fences0), (1, layout1, num_fences1), (2, layout2, num_fences2), 
+    (3, layout3, num_fences3), (4, layout4, num_fences4), (5, layout5, num_fences5), (6, layout6, num_fences6), 
+    (7, layout7, num_fences7), (8, layout8, num_fences8), (9, layout9, num_fences9), (10, layout10, num_fences10), 
+    (11, layout11, num_fences11), (12, layout12, num_fences12), (13, layout13, num_fences13), (14, layout14, num_fences14), 
+    (15, layout15, num_fences15), (16, layout16, num_fences16), (17, layout17, num_fences17), (18, layout18, num_fences18), 
+    (19, layout19, num_fences19)]
 
 # from minerl.env.minecraft_enclose
-for layout_id, layout in LAYOUTS.items():
+for layout_id, layout, num_fences in LAYOUTS:
 
     register(
         id='MinecraftEnclose{}-v0'.format(layout_id),
         entry_point='minerl.env.minecraft_enclose:MinecraftEnclose',
-        kwargs={'layout' : layout},
+        kwargs={'layout' : layout, 'num_fences' : num_fences},
     )
 
     register(
         id='MiniMinecraftEnclose{}-v0'.format(layout_id),
         entry_point='minerl.env.minecraft_enclose:MiniMinecraftEnclose',
-        kwargs={'layout' : layout},
+        kwargs={'layout' : layout, 'num_fences' : num_fences},
     )
 
