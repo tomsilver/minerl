@@ -1,6 +1,5 @@
 from minerl.env.core import MineRLEnv
-
-import minerl.env.spaces
+from minerl.env import spaces
 
 from collections import OrderedDict
 
@@ -111,6 +110,7 @@ class MinecraftEnclose(MineRLEnv):
             self.inner_images.append(self.render())
         obs = self.post_process_obs(obs)
         done = self.get_done(obs)
+        reward = float(done)
         return obs, reward, done, debug_info
 
     def post_process_obs(self, obs):
@@ -259,10 +259,16 @@ class MinecraftEnclose(MineRLEnv):
         return xml
 
     def close(self):
+        print("Closing! Render inner:", self.render_inner, self.video_outfile)
         if self.render_inner:
             imageio.mimsave(self.video_outfile, self.inner_images, fps=self.fps)
             print("Wrote out video to {}.".format(self.video_outfile))
         return super().close()
+
+    def start_recording_video(self, video_out_path=None):
+        self.render_inner = True
+        if video_out_path:
+            self.video_outfile = video_out_path
 
 class MiniMinecraftEnclose(gym.Env):
 
@@ -331,37 +337,37 @@ class MiniMinecraftEnclose(gym.Env):
 #     print("Policy returning (0, 0)!")
 #     return (0, 0)
 
-def policy(obs):
-    sheep_r, sheep_c = np.argwhere(obs == 'sheep')[0]
-    for r in range(1, obs.shape[0]):
-        if r <= sheep_r:
-            continue
-        for c in range(1, obs.shape[1]-1):
-            if obs[r, c-1] == 'fence' and obs[r, c] == 'fence' and obs[r, c+1] == None:
-                if sheep_c <= c:
-                    if np.all(obs[sheep_r+1:r, sheep_c:c] == None):
-                        return (r, c+1)
-                elif np.all(obs[sheep_r+1:r, c:sheep_c] == None):
-                    return (r, c+1)
+# def policy(obs):
+#     sheep_r, sheep_c = np.argwhere(obs == 'sheep')[0]
+#     for r in range(1, obs.shape[0]):
+#         if r <= sheep_r:
+#             continue
+#         for c in range(1, obs.shape[1]-1):
+#             if obs[r, c-1] == 'fence' and obs[r, c] == 'fence' and obs[r, c+1] == None:
+#                 if sheep_c <= c:
+#                     if np.all(obs[sheep_r+1:r, sheep_c:c] == None):
+#                         return (r, c+1)
+#                 elif np.all(obs[sheep_r+1:r, c:sheep_c] == None):
+#                     return (r, c+1)
 
-    print("Policy returning (0, 0)!")
-    return (0, 0)
-
-
-def demo():
-
-    for i, layout in LAYOUTS.items():
-        env = MiniMinecraftEnclose(layout, render_inner=True, video_outfile='MinecraftEnclose_demo_{}.gif'.format(i), fps=20)
-        obs = env.reset()
-
-        for _ in range(50):
-            action = policy(obs)
-            obs, reward, done, debug_info = env.step(action)
-            if done:
-                break
-
-        env.close()
+#     print("Policy returning (0, 0)!")
+#     return (0, 0)
 
 
-if __name__ == '__main__':
-    demo()
+# def demo():
+
+#     for i, layout in LAYOUTS.items():
+#         env = MiniMinecraftEnclose(layout, render_inner=True, video_outfile='MinecraftEnclose_demo_{}.gif'.format(i), fps=20)
+#         obs = env.reset()
+
+#         for _ in range(50):
+#             action = policy(obs)
+#             obs, reward, done, debug_info = env.step(action)
+#             if done:
+#                 break
+
+#         env.close()
+
+
+# if __name__ == '__main__':
+#     demo()
