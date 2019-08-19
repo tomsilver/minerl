@@ -2,6 +2,8 @@ from core import MineRLEnv
 
 import spaces
 
+from collections import OrderedDict
+
 import skimage
 import gym
 import numpy as np
@@ -291,7 +293,7 @@ layout1 = [
     ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
     ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
     ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
-    ['fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence', 'xxxxx', 'fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
+    ['fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
 ]
 
 layout2 = [
@@ -304,6 +306,32 @@ layout2 = [
     ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
     ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
     ['fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence', 'xxxxx', 'fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
+]
+
+layout3 = [
+    ['fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence'],
+    ['fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence'],
+    ['fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'sheep', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
+    ['fence', 'fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence', 'fence'],
+
 ]
 
 # def policy(obs):
@@ -337,10 +365,11 @@ def policy(obs):
 
 
 def demo():
-    layouts = { 0 : layout0, 1 : layout1, 2 : layout2 }
+    layouts = OrderedDict([(0, layout0), (1, layout1), (2, layout2), (3, layout3)])
+    # layouts = OrderedDict([(3, layout3)])
 
     for i, layout in layouts.items():
-        env = MinecraftChase(layout, render_inner=True, video_outfile='MinecraftChase_demo_{}.mp4'.format(i), fps=20)
+        env = MinecraftChase(layout, render_inner=True, video_outfile='MinecraftChase_demo_{}.gif'.format(i), fps=20)
         obs = env.reset()
 
         for _ in range(50):
