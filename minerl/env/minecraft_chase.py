@@ -1,26 +1,32 @@
 from core import MineRLEnv
-from wrappers import VideoWrapper
 
 import spaces
 
 import gym
 import numpy as np
 import tempfile
+import imageio
 
 import logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 
 class MinecraftChase(MineRLEnv):
 
-    def __init__(self, layout, *args, **kwargs):
+    def __init__(self, layout, render_inner=False, video_outfile='out.mp4', fps=20, *args, **kwargs):
         self.layout = np.array(layout, dtype=object)
+        self.render_inner = render_inner
+        self.video_outfile = video_outfile
+        self.fps = fps
+        self.inner_images = []
 
         self.grid_mins = (0, 1, 0)
         self.grid_maxs = (self.layout.shape[0] - 1, 1, self.layout.shape[1] - 1)
 
         self.agent_start = (self.layout.shape[1] // 2, -4)
-        self.sheep_start = tuple(np.argwhere(self.layout == 'sheep')[0])
+        sheep_r, sheep_c = np.argwhere(self.layout == 'sheep')[0]
+        sheep_z, sheep_x = self.layout.shape[0] - sheep_r - 1, self.layout.shape[1] - sheep_c - 1
+        self.sheep_start = (sheep_x, sheep_z)
 
         xml = self.create_xml_file()
 
@@ -43,6 +49,8 @@ class MinecraftChase(MineRLEnv):
 
     def reset(self):
         obs = super().reset()
+        if self.render_inner:
+            self.inner_images.append(self.render())
         return self.post_process_obs(obs)
 
     def step(self, action):
@@ -50,13 +58,13 @@ class MinecraftChase(MineRLEnv):
         obs, reward, done, debug_info = self._step({})
 
         # Check that the target pos is empty
-        if obs[action[0], action[1]] != 'air' or action[0] == 0:
-            logging.debug("Return 1", obs[action[0], action[1]])
+        if obs[action[0], action[1]] != None or action[0] == 0:
+            logging.debug("Return 1")
             # import pdb; pdb.set_trace()
             return obs, reward, done, debug_info
 
         # Check that the target+1 pos is empty
-        if obs[action[0]-1, action[1]] != 'air':
+        if obs[action[0]-1, action[1]] != None:
             logging.debug("Return 2")
             return obs, reward, done, debug_info
 
@@ -96,6 +104,8 @@ class MinecraftChase(MineRLEnv):
 
     def _step(self, action):
         obs, reward, done, debug_info = super().step(action)
+        if self.render_inner:
+            self.inner_images.append(self.render())
         obs = self.post_process_obs(obs)
         return obs, reward, done, debug_info
 
@@ -109,6 +119,8 @@ class MinecraftChase(MineRLEnv):
         assert arr.shape[1] == 1
         arr = arr.squeeze()
         assert len(arr.shape) == 2
+
+        arr[arr == 'air'] = None
 
         return arr
 
@@ -220,31 +232,48 @@ class MinecraftChase(MineRLEnv):
 
         return xml
 
+    def close(self):
+        if self.render_inner:
+            imageio.mimsave(self.video_outfile, self.inner_images, fps=self.fps)
+            print("Wrote out video to {}.".format(self.video_outfile))
+        return super().close()
+
+
+layout0 = [
+    ['fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence', 'fence'],
+    ['fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'sheep', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence', 'fence'],
+]
+
+layout1 = [
+    ['fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'xxxxx', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'sheep', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
+]
 
 
 def demo():
-    layout = [
-        ['fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence'],
-        ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
-        ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
-        ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence', 'fence'],
-        ['fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
-        ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
-        ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'sheep', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
-        ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
-        ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
-        ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
-        ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
-        ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
-        ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
-        ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
-        ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
-        ['fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
-        ['fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence', 'fence'],
-    ]
-
-    env = MinecraftChase(layout)
-    env = VideoWrapper(env, 'MinecraftChase_demo.mp4', fps=20)
+    env = MinecraftChase(layout1, render_inner=True, video_outfile='MinecraftChase_demo.mp4', fps=20)
 
     obs = env.reset()
 
@@ -253,7 +282,6 @@ def demo():
     actions = [(obs.shape[0]-1, 2), (obs.shape[0]-1, 3), (obs.shape[0]-1, 4), (obs.shape[0]-1, 5)]
 
     for t in range(T):
-        print("obs:", obs)
         if t < len(actions):
             action = actions[t]
         else:

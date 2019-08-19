@@ -383,6 +383,11 @@ class MineRLEnv(gym.Env):
 
             elif isinstance(self.action_space.spaces[act], gym.spaces.Box):
                 subact = action_in[act]
+
+                # TSS
+                # if subact is None:
+                #     continue
+
                 assert not isinstance(
                     subact, str), "Box action {} is a string! It should be a ndarray: {}".format(act, subact)
                 if isinstance(subact, np.ndarray):
