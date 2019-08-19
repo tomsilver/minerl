@@ -2,6 +2,7 @@ from core import MineRLEnv
 
 import spaces
 
+import cv2
 import gym
 import numpy as np
 import tempfile
@@ -107,6 +108,7 @@ class MinecraftChase(MineRLEnv):
         if self.render_inner:
             self.inner_images.append(self.render())
         obs = self.post_process_obs(obs)
+        done = self.get_done(obs)
         return obs, reward, done, debug_info
 
     def post_process_obs(self, obs):
@@ -123,6 +125,26 @@ class MinecraftChase(MineRLEnv):
         arr[arr == 'air'] = None
 
         return arr
+
+    def get_done(self, obs):
+        sheep_r, sheep_c = np.argwhere(obs=='sheep')[0]
+        mask = (obs == 'fence').astype(np.uint8)
+        components = cv2.connectedComponents(mask)
+        sheep_component = components[sheep_r, sheep_c]
+
+        if np.any(components[0] == sheep_component):
+            return False
+
+        if np.any(components[-1] == sheep_component):
+            return False
+
+        if np.any(components[:, 0] == sheep_component):
+            return False
+
+        if np.any(components[:, -1] == sheep_component):
+            return False
+
+        return True
 
     def create_xml_file(self):
         layout_blocks = self.create_layout_xml_blocks()
@@ -271,21 +293,45 @@ layout1 = [
     ['fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
 ]
 
+layout2 = [
+    ['fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'fence', 'sheep', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['fence', 'fence', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['xxxxx', 'xxxxx', 'xxxxx', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence'],
+    ['xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'fence', 'fence'],
+]
+
+def policy(obs):
+    sheep_r, sheep_c = np.argwhere(obs == 'sheep')[0]
+    for r in range(1, obs.shape[0]):
+        for c in range(1, obs.shape[1]-1):
+            if obs[r, c-1] == 'fence' and obs[r, c] == 'fence' and obs[r, c+1] == None:
+                if np.all(obs[sheep_r+1:r-1, sheep_c+1:c-1] == None):
+                    return (r, c+1)
+
+    print("Policy returning (0, 0)!")
+    return (0, 0)
+
 
 def demo():
-    env = MinecraftChase(layout1, render_inner=True, video_outfile='MinecraftChase_demo.mp4', fps=20)
+    env = MinecraftChase(layout0, render_inner=True, video_outfile='MinecraftChase_demo.mp4', fps=20)
 
     obs = env.reset()
 
-    T = 250
+    done = False
 
-    actions = [(obs.shape[0]-1, 2), (obs.shape[0]-1, 3), (obs.shape[0]-1, 4), (obs.shape[0]-1, 5)]
-
-    for t in range(T):
-        if t < len(actions):
-            action = actions[t]
-        else:
-            action = (0, 0)
+    while not done:
+        action = policy(obs)
         obs, reward, done, debug_info = env.step(action)
 
     env.close()
