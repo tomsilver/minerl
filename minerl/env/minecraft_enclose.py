@@ -28,7 +28,7 @@ class MinecraftEnclose(MineRLEnv):
 
         self.agent_start = (self.layout.shape[1] // 2, -4)
         self.sheep_r, self.sheep_c = np.argwhere(self.layout == 'sheep')[0]
-        sheep_z, sheep_x = self.layout.shape[0] - self.sheep_r - 1, self.layout.shape[1] - self.sheep_c - 1
+        sheep_z, sheep_x = self.layout.shape[0] - self.sheep_r, self.layout.shape[1] - self.sheep_c - 1
         self.sheep_start = (sheep_x, sheep_z)
 
         xml = self.create_xml_file()
