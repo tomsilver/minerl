@@ -2,7 +2,7 @@ from core import MineRLEnv
 
 import spaces
 
-import cv2
+import skimage
 import gym
 import numpy as np
 import tempfile
@@ -130,7 +130,7 @@ class MinecraftChase(MineRLEnv):
     def get_done(self, obs):
         sheep_r, sheep_c = np.argwhere(obs=='sheep')[0]
         mask = (obs == 'fence').astype(np.uint8)
-        _, components = cv2.connectedComponents(mask)
+        components = skimage.measure.label(mask, background=2, return_num=False)
         sheep_component = components[sheep_r, sheep_c]
 
         if np.any(components[0] == sheep_component):
@@ -327,18 +327,19 @@ def policy(obs):
 
 
 def demo():
-    env = MinecraftChase(layout0, render_inner=True, video_outfile='MinecraftChase_demo.mp4', fps=20)
+    layouts = [layout0, layout1]
 
-    obs = env.reset()
+    for i, layout in enumerate(layouts):
+        env = MinecraftChase(layout, render_inner=True, video_outfile='MinecraftChase_demo_{}.mp4'.format(i), fps=20)
+        obs = env.reset()
 
+        for _ in range(50):
+            action = policy(obs)
+            obs, reward, done, debug_info = env.step(action)
+            if done:
+                break
 
-    for _ in range(50):
-        action = policy(obs)
-        obs, reward, done, debug_info = env.step(action)
-        if done:
-            break
-
-    env.close()
+        env.close()
 
 
 if __name__ == '__main__':
